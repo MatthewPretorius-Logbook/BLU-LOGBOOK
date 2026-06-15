@@ -462,9 +462,11 @@ let STATE={
 };
 
 function save(){
-  try{localStorage.setItem(SK,JSON.stringify(STATE));}
-  catch(e){toast("⚠ Could not save — storage full");}
-  flashSave();
+  try{
+    localStorage.setItem(SK,JSON.stringify(STATE));
+  }catch(e){
+    console.warn("localStorage error:",e);
+  }
 }
 function load(){
   try{
@@ -485,10 +487,10 @@ function saveProfile(){
   const cohort=document.getElementById("f-cohort").value.trim();
   const year=document.getElementById("f-year").value;
   const ebl=document.getElementById("f-ebl").value;
-  if(!name||!stuno||!email||!trade||!cohort){
-    toast("Please fill in all fields");return;
+  if(!name||!stuno||!trade||!cohort){
+    alert("Please fill in all fields before continuing.");return;
   }
-  STATE.profile={name,stuno,email,trade,cohort,year,ebl};
+  STATE.profile={name,stuno,email:email||"not set",trade,cohort,year,ebl};
   save();
   showApp();
 }
@@ -781,12 +783,17 @@ function tab(name,btn){
   if(name==="profile"){updateTopbar();updateProfileStats();}
 }
 function showApp(){
-  updateTopbar();
-  buildCards();
-  buildFB();
-  updateOv();
-  updateProgress();
-  showScreen("home");
+  try{
+    updateTopbar();
+    buildCards();
+    buildFB();
+    updateOv();
+    updateProgress();
+    showScreen("home");
+  }catch(err){
+    console.error("showApp error:",err);
+    alert("Error loading app: "+err.message);
+  }
 }
 
 // ── TOAST ─────────────────────────────────────────────────────
@@ -804,4 +811,3 @@ else{showScreen("setup");}
 </script>
 </body>
 </html>
-
