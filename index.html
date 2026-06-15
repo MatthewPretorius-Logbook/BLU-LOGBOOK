@@ -2,396 +2,290 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>BluLever Logbook Tracker</title>
 <style>
-:root{
-  --navy:#1A3C5E;--teal:#0F6E56;--gold:#F5B800;--white:#fff;
-  --g0:#F4F6F8;--g1:#E2EBF0;--g2:#B4B2A9;--g3:#5F5E5A;
-  --green:#1D9E75;--lgreen:#E1F5EE;--dgreen:#085041;
-  --amber:#EF9F27;--lamber:#FAEEDA;--damber:#633806;
-  --red:#E24B4A;--lred:#FCEBEB;--dred:#791F1F;--blue:#378ADD;
-}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#000;color:var(--navy)}
-.app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--white);display:flex;flex-direction:column;position:relative;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#1A3C5E;min-height:100vh;display:flex;justify-content:center}
+.app{width:100%;max-width:430px;background:#fff;min-height:100vh;display:flex;flex-direction:column;position:relative}
+.page{display:none;flex-direction:column;flex:1}
+.page.active{display:flex}
 
-/* ── SCREENS ── */
-.scr{display:none;flex-direction:column;flex:1;min-height:0}
-.scr.on{display:flex}
+/* SETUP */
+.setup-wrap{padding:32px 20px 40px;background:#1A3C5E;flex:1;overflow-y:auto}
+.logo-svg{display:block;margin:0 auto 28px}
+.card{background:#fff;border-radius:16px;padding:22px 20px}
+.card h2{font-size:18px;font-weight:700;color:#1A3C5E;margin-bottom:4px}
+.card p{font-size:13px;color:#5F5E5A;margin-bottom:18px;line-height:1.5}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;font-weight:700;color:#888780;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.field input,.field select{width:100%;padding:11px 12px;border-radius:8px;border:1.5px solid #E2EBF0;font-size:15px;color:#1A3C5E;background:#F4F6F8;outline:none;font-family:inherit;-webkit-appearance:none}
+.field input:focus,.field select:focus{border-color:#0F6E56;background:#fff}
+.btn-start{display:block;width:100%;padding:14px;background:#1A3C5E;color:#fff;font-size:16px;font-weight:700;border:none;border-radius:10px;cursor:pointer;margin-top:8px;text-align:center}
+.btn-start:active{opacity:.85}
+.setup-note{font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-top:16px;line-height:1.7;padding:0 8px}
 
-/* ── SETUP SCREEN ── */
-#s-setup{background:var(--navy);padding:32px 24px;justify-content:flex-start;overflow-y:auto;padding-bottom:40px}
-.setup-logo{width:160px;height:auto;display:block;margin:0 auto 28px}
-.setup-card{background:var(--white);border-radius:20px;padding:26px 22px;width:100%}
-.setup-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px}
-.setup-sub{font-size:13px;color:var(--g3);margin-bottom:20px;line-height:1.5}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:12px;font-weight:700;color:var(--g3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px}
-.field input,.field select{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--g1);font-size:15px;font-family:inherit;color:var(--navy);background:var(--g0);-webkit-appearance:none;appearance:none;outline:none}
-.field input:focus,.field select:focus{border-color:var(--teal);background:var(--white)}
-.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235F5E5A' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
-.btn-primary{width:100%;padding:14px;border-radius:12px;border:none;background:var(--navy);color:var(--white);font-size:16px;font-weight:700;cursor:pointer;margin-top:6px;transition:opacity .15s}
-.btn-primary:hover{opacity:.9}
-.btn-primary:active{opacity:.8}
-.setup-note{font-size:11px;color:rgba(255,255,255,.35);text-align:center;margin-top:18px;line-height:1.7}
+/* TOPBAR */
+.topbar{background:#1A3C5E;padding:10px 14px;flex-shrink:0}
+.topbar-row{display:flex;align-items:center;justify-content:space-between}
+.t-right{display:flex;align-items:center;gap:8px}
+.t-info{text-align:right}
+.t-name{font-size:13px;font-weight:700;color:#fff}
+.t-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
+.t-pill{background:rgba(245,184,0,.2);color:#F5B800;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:inline-block;margin-top:2px}
+.t-av{width:32px;height:32px;border-radius:50%;background:#F5B800;color:#1A3C5E;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
 
-/* ── TOPBAR ── */
-.topbar{background:var(--navy);padding:11px 14px 9px;flex-shrink:0}
-.tbr{display:flex;align-items:center;justify-content:space-between}
-.tbl{height:20px;width:auto}
-.tbinfo{text-align:right}
-.tbn{font-size:13px;font-weight:700;color:var(--white)}
-.tbs{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
-.trade-pill{background:rgba(245,184,0,.2);color:var(--gold);font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:inline-block;margin-top:2px}
-.av{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy);flex-shrink:0;cursor:pointer}
+/* BODY */
+.scroll-body{flex:1;overflow-y:auto;padding-bottom:70px}
 
-/* ── SCROLLABLE BODY ── */
-.body{flex:1;overflow-y:auto;padding-bottom:72px}
-
-/* ── OVERVIEW CARD ── */
-.ov{margin:12px;background:var(--navy);border-radius:16px;padding:14px 16px}
-.ovr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.ovp{font-size:32px;font-weight:800;color:var(--white);letter-spacing:-1px;min-width:68px}
-.ovrt{flex:1}
-.ovl{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
-.ovt{height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden}
-.ovf{height:100%;background:var(--gold);border-radius:4px;transition:width .4s}
-.ovc{font-size:11px;color:rgba(255,255,255,.45);margin-top:4px}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
+/* OVERVIEW */
+.ov{margin:12px;background:#1A3C5E;border-radius:14px;padding:14px}
+.ov-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ov-pct{font-size:30px;font-weight:800;color:#fff;letter-spacing:-1px;min-width:64px}
+.ov-right{flex:1}
+.ov-lbl{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.ov-track{height:7px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden}
+.ov-fill{height:100%;background:#F5B800;border-radius:4px;transition:width .4s}
+.ov-cnt{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px}
+.ov-chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
-.cg{background:rgba(29,158,117,.25);color:#9FE1CB}
-.ca{background:rgba(239,159,39,.2);color:#FAC775}
-.cr{background:rgba(226,75,74,.2);color:#F09595}
+.chip-g{background:rgba(29,158,117,.25);color:#9FE1CB}
+.chip-a{background:rgba(239,159,39,.2);color:#FAC775}
+.chip-r{background:rgba(226,75,74,.2);color:#F09595}
 
-/* ── SECTION LABELS ── */
-.sl{font-size:10px;font-weight:700;color:var(--g2);letter-spacing:.08em;text-transform:uppercase;padding:12px 14px 5px}
+/* SECTION LABEL */
+.sl{font-size:10px;font-weight:700;color:#B4B2A9;letter-spacing:.08em;text-transform:uppercase;padding:10px 14px 4px}
 
-/* ── WM CARDS ── */
-.wmc{margin:0 10px 8px;border-radius:14px;border:1px solid var(--g1);overflow:hidden;background:var(--white)}
-.wmh{display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer;user-select:none}
-.wms{width:4px;height:34px;border-radius:2px;flex-shrink:0}
-.wmi{flex:1;min-width:0}
-.wmn{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wmp{font-size:11px;color:var(--g3);margin-top:1px}
-.wmb{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;white-space:nowrap}
-.bg{background:var(--lgreen);color:var(--dgreen)}.ba{background:var(--lamber);color:var(--damber)}.br{background:var(--lred);color:var(--dred)}
-.wch{font-size:14px;color:var(--g2);transition:transform .2s;flex-shrink:0}
-.wch.open{transform:rotate(180deg)}
-.wb{border-top:1px solid var(--g1);display:none}
-.wb.open{display:block}
-.wes{padding:9px 12px;border-bottom:1px solid var(--g1)}
-.wes:last-child{border-bottom:none}
-.wet{font-size:10px;font-weight:700;color:var(--g2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px}
-.war{display:flex;align-items:center;gap:5px;margin-bottom:7px}
-.war:last-child{margin-bottom:0}
-.wac{font-size:10px;color:var(--g2);min-width:48px;font-family:"SF Mono","Menlo",monospace}
+/* WM CARDS */
+.wm-card{margin:0 10px 8px;border-radius:12px;border:1px solid #E2EBF0;overflow:hidden;background:#fff}
+.wm-hdr{display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer;user-select:none}
+.wm-stripe{width:4px;height:32px;border-radius:2px;flex-shrink:0}
+.wm-info{flex:1;min-width:0}
+.wm-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wm-prog{font-size:11px;color:#5F5E5A;margin-top:1px}
+.wm-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;white-space:nowrap}
+.bg{background:#E1F5EE;color:#085041}.ba{background:#FAEEDA;color:#633806}.br{background:#FCEBEB;color:#791F1F}
+.wm-chev{font-size:13px;color:#B4B2A9;transition:transform .2s;flex-shrink:0}
+.wm-chev.open{transform:rotate(180deg)}
+.wm-body{border-top:1px solid #E2EBF0;display:none}
+.wm-body.open{display:block}
+.we-sec{padding:8px 12px;border-bottom:1px solid #E2EBF0}
+.we-sec:last-child{border-bottom:none}
+.we-title{font-size:10px;font-weight:700;color:#B4B2A9;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px}
+.wa-row{display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.wa-row:last-child{margin-bottom:0}
+.wa-code{font-size:10px;color:#B4B2A9;min-width:46px;font-family:monospace}
 .dots{display:flex;gap:2px;flex:1}
-.dot{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--g1);background:var(--g0);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
-.dot.done{background:var(--green);border-color:var(--dgreen)}
-.dot.done::after{content:"";width:5px;height:5px;background:var(--white);border-radius:50%}
+.dot{width:21px;height:21px;border-radius:50%;border:1.5px solid #E2EBF0;background:#F4F6F8;cursor:pointer;flex-shrink:0;transition:all .1s;display:flex;align-items:center;justify-content:center}
+.dot.done{background:#1D9E75;border-color:#0F6E56}
+.dot.done::after{content:'';width:5px;height:5px;background:#fff;border-radius:50%}
 .dot:active{transform:scale(.85)}
-.wak{font-size:11px;font-weight:700;min-width:26px;text-align:right}
-.kd{color:var(--dgreen)}.kp{color:var(--damber)}.kn{color:var(--g2)}
+.wa-cnt{font-size:11px;font-weight:700;min-width:26px;text-align:right}
+.cnt-d{color:#085041}.cnt-p{color:#633806}.cnt-n{color:#B4B2A9}
 
-/* ── FEEDBACK ── */
-.fbc{margin:0 10px 8px;border-radius:14px;border:1px solid #FAC775;background:#FFFBF0;overflow:hidden}
-.fbh{padding:9px 12px;border-bottom:1px solid #FAC775;display:flex;align-items:center;gap:7px}
-.fbhi{width:26px;height:26px;border-radius:7px;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
-.fbht{font-size:12px;font-weight:700;color:var(--damber)}
-.fbhs{font-size:10px;color:var(--damber);opacity:.7}
-.fbr{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid rgba(245,184,0,.15)}
-.fbr:last-child{border-bottom:none}
-.fbw{flex:1;font-size:12px;font-weight:600;color:var(--navy)}
-.fbws{font-size:10px;color:var(--g3);font-weight:400}
-.fby{display:flex;gap:4px}
-.yr{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--g1);background:var(--white);font-size:10px;font-weight:700;color:var(--g2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.yr.done{background:var(--green);border-color:var(--dgreen);color:var(--white)}
-.yr-note{font-size:9px;color:var(--g2);margin-top:3px;text-align:center;display:block}
+/* FEEDBACK */
+.fb-card{margin:0 10px 8px;border-radius:12px;border:1px solid #FAC775;background:#FFFBF0;overflow:hidden}
+.fb-hdr{padding:9px 12px;border-bottom:1px solid #FAC775;display:flex;align-items:center;gap:7px}
+.fb-icon{width:26px;height:26px;background:#F5B800;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.fb-title{font-size:12px;font-weight:700;color:#633806}
+.fb-sub{font-size:10px;color:#633806;opacity:.7}
+.fb-row{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid rgba(245,184,0,.15)}
+.fb-row:last-child{border-bottom:none}
+.fb-wm{flex:1;font-size:12px;font-weight:600;color:#1A3C5E}
+.fb-wm-sub{font-size:10px;color:#5F5E5A;font-weight:400}
+.fb-yrs{display:flex;gap:4px}
+.yr{width:28px;height:28px;border-radius:50%;border:1.5px solid #E2EBF0;background:#fff;font-size:10px;font-weight:700;color:#B4B2A9;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.yr.done{background:#1D9E75;border-color:#0F6E56;color:#fff}
 
-/* ── FORM BANNER ── */
-.form-banner{margin:0 10px 8px;border-radius:12px;background:var(--navy);padding:12px 14px;display:flex;align-items:center;gap:10px}
-.form-banner-icon{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
-.form-banner-text{flex:1}
-.form-banner-title{font-size:12px;font-weight:700;color:var(--white)}
-.form-banner-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
-.form-banner-btn{background:var(--gold);color:var(--navy);font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0}
+/* BOTTOM NAV */
+.bnav{position:absolute;bottom:0;left:0;right:0;display:flex;background:#fff;border-top:1px solid #E2EBF0;z-index:10}
+.nb{flex:1;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:none;background:none;font-size:10px;font-weight:600;color:#B4B2A9}
+.nb.active{color:#1A3C5E}
+.nb svg{width:20px;height:20px}
 
-/* ── TOAST ── */
-.toast{position:absolute;bottom:82px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);font-size:13px;font-weight:600;padding:10px 18px;border-radius:100px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:100}
+/* PROGRESS */
+.prog-card{margin:12px;border-radius:12px;border:1px solid #E2EBF0;overflow:hidden}
+.prog-row{display:flex;align-items:center;padding:9px 12px;border-bottom:1px solid #E2EBF0;gap:10px}
+.prog-row:last-child{border-bottom:none}
+.prog-lbl{font-size:12px;font-weight:700;min-width:52px}
+.prog-track{flex:1;height:7px;background:#E2EBF0;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width .4s}
+.prog-cnt{font-size:11px;font-weight:700;min-width:50px;text-align:right}
+
+/* PROFILE */
+.prof-sec{padding:12px 14px;border-bottom:1px solid #E2EBF0}
+.prof-lbl{font-size:10px;font-weight:700;color:#B4B2A9;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.prof-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #F4F6F8}
+.prof-row:last-child{border-bottom:none}
+.prof-key{font-size:13px;color:#5F5E5A}
+.prof-val{font-size:13px;font-weight:600;color:#1A3C5E}
+.note{font-size:12px;color:#5F5E5A;line-height:1.6;padding:10px 13px;background:#F4F6F8;margin:10px;border-radius:8px}
+.btn-copy{display:block;width:calc(100% - 24px);margin:0 12px 10px;padding:11px;border-radius:8px;border:1.5px solid #E2EBF0;background:#fff;color:#1A3C5E;font-size:13px;font-weight:600;cursor:pointer;text-align:center}
+.btn-reset{display:block;width:calc(100% - 24px);margin:0 12px 12px;padding:11px;border-radius:8px;border:1.5px solid #FCEBEB;background:none;color:#791F1F;font-size:13px;font-weight:600;cursor:pointer;text-align:center}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1A3C5E;color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:100px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
-
-/* ── BOTTOM NAV ── */
-.bnav{position:absolute;bottom:0;left:0;right:0;display:flex;background:var(--white);border-top:1px solid var(--g1);z-index:10}
-.nb{flex:1;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:none;font-size:10px;font-weight:600;transition:color .15s}
-.nb.active{color:var(--navy)}.nb:not(.active){color:var(--g2)}
-.nb svg{width:21px;height:21px}
-
-/* ── PROGRESS SCREEN ── */
-.pc{margin:12px;border-radius:14px;border:1px solid var(--g1);overflow:hidden}
-.pr{display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid var(--g1);gap:10px}
-.pr:last-child{border-bottom:none}
-.prl{font-size:12px;font-weight:700;min-width:52px}
-.prt{flex:1;height:8px;background:var(--g1);border-radius:4px;overflow:hidden}
-.prf{height:100%;border-radius:4px;transition:width .4s}
-.prk{font-size:11px;font-weight:700;min-width:52px;text-align:right}
-
-/* ── PROFILE SCREEN ── */
-.is{padding:13px 14px;border-bottom:1px solid var(--g1)}
-.il{font-size:10px;font-weight:700;color:var(--g2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
-.ir{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--g1)}
-.ir:last-child{border-bottom:none}
-.ik{font-size:13px;color:var(--g3)}
-.iv{font-size:13px;font-weight:600;color:var(--navy)}
-.in{font-size:12px;color:var(--g3);line-height:1.6;padding:11px 13px;background:var(--g0);margin:12px;border-radius:10px}
-.btn-danger{width:calc(100% - 28px);margin:13px 14px;padding:12px;border-radius:10px;border:1.5px solid var(--lred);background:none;color:var(--dred);font-size:13px;font-weight:700;cursor:pointer;display:block}
-.btn-secondary{width:calc(100% - 28px);margin:0 14px 12px;padding:11px;border-radius:10px;border:1.5px solid var(--g1);background:none;color:var(--navy);font-size:13px;font-weight:600;cursor:pointer;display:block}
-
-/* ── SAVE INDICATOR ── */
-.save-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-left:6px;opacity:0;transition:opacity .3s}
-.save-dot.show{opacity:1}
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- ══ SETUP SCREEN ══ -->
-<div id="s-setup" class="scr on">
-  <svg width="200" viewBox="0 0 200 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 28px" aria-label="BluLever Education">
-  <circle cx="18" cy="14" r="6.5" fill="white"/>
-  <circle cx="40" cy="14" r="6.5" fill="white"/>
-  <circle cx="29" cy="34" r="6.5" fill="white"/>
-  <circle cx="11" cy="34" r="4"   fill="white" opacity=".6"/>
-  <circle cx="47" cy="34" r="4"   fill="white" opacity=".6"/>
-  <line x1="18" y1="14" x2="40" y2="14" stroke="white" stroke-width="2.5" opacity=".45"/>
-  <line x1="18" y1="14" x2="29" y2="34" stroke="white" stroke-width="2.5" opacity=".45"/>
-  <line x1="40" y1="14" x2="29" y2="34" stroke="white" stroke-width="2.5" opacity=".45"/>
-  <line x1="18" y1="14" x2="11" y2="34" stroke="white" stroke-width="1.8" opacity=".3"/>
-  <line x1="40" y1="14" x2="47" y2="34" stroke="white" stroke-width="1.8" opacity=".3"/>
-  <text x="66" y="22" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-weight="700" font-size="18" fill="white" letter-spacing="1.5">BLULEVER</text>
-  <text x="66" y="42" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-weight="400" font-size="14" fill="rgba(255,255,255,0.65)" letter-spacing="1.5">EDUCATION</text>
-</svg>
-  <div class="setup-card">
-    <div class="setup-title">Welcome to your logbook</div>
-    <div class="setup-sub">Set up your profile once — your progress saves on this device automatically.</div>
-    <div class="field">
-      <label>Full name</label>
-      <input id="f-name" type="text" placeholder="e.g. Thabo Nkosi" autocomplete="name">
-    </div>
-    <div class="field">
-      <label>Student number</label>
-      <input id="f-stuno" type="text" placeholder="e.g. BLE2023001">
-    </div>
-    <div class="field">
-      <label>BluLever email</label>
-      <input id="f-email" type="email" placeholder="yourname@blulever.com" autocomplete="email">
-    </div>
-    <div class="field">
-      <label>Trade</label>
+<!-- SETUP PAGE -->
+<div id="pg-setup" class="page active">
+<div class="setup-wrap">
+  <svg class="logo-svg" width="200" height="52" viewBox="0 0 200 52" fill="none">
+    <circle cx="18" cy="13" r="6" fill="white"/>
+    <circle cx="38" cy="13" r="6" fill="white"/>
+    <circle cx="28" cy="31" r="6" fill="white"/>
+    <circle cx="10" cy="31" r="4" fill="white" opacity=".55"/>
+    <circle cx="46" cy="31" r="4" fill="white" opacity=".55"/>
+    <line x1="18" y1="13" x2="38" y2="13" stroke="white" stroke-width="2" opacity=".4"/>
+    <line x1="18" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+    <line x1="38" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+    <text x="62" y="20" font-family="-apple-system,Arial,sans-serif" font-weight="700" font-size="15" fill="white" letter-spacing="1">BLULEVER</text>
+    <text x="62" y="38" font-family="-apple-system,Arial,sans-serif" font-weight="400" font-size="12" fill="rgba(255,255,255,0.6)" letter-spacing="1">EDUCATION</text>
+  </svg>
+  <div class="card">
+    <h2>Welcome to your logbook</h2>
+    <p>Set up your profile once — your progress saves on this device automatically.</p>
+    <div class="field"><label>Full name</label><input id="f-name" type="text" placeholder="e.g. Thabo Nkosi"></div>
+    <div class="field"><label>Student number</label><input id="f-stuno" type="text" placeholder="e.g. BLE2023001"></div>
+    <div class="field"><label>BluLever email</label><input id="f-email" type="email" placeholder="name@blulever.com"></div>
+    <div class="field"><label>Trade</label>
       <select id="f-trade">
-        <option value="">Select your trade…</option>
+        <option value="">Select trade…</option>
         <option value="Plumbing">Plumbing</option>
         <option value="Electrical">Electrical</option>
         <option value="Automotive">Automotive</option>
         <option value="Solar">Solar</option>
       </select>
     </div>
-    <div class="field">
-      <label>Cohort</label>
-      <input id="f-cohort" type="text" placeholder="e.g. 2024-A">
+    <div class="field"><label>Cohort</label><input id="f-cohort" type="text" placeholder="e.g. 2024-A"></div>
+    <div class="field"><label>Current year</label>
+      <select id="f-year"><option>Year 1</option><option>Year 2</option><option>Year 3</option></select>
     </div>
-    <div class="field">
-      <label>Current year</label>
-      <select id="f-year">
-        <option value="Year 1">Year 1</option>
-        <option value="Year 2">Year 2</option>
-        <option value="Year 3">Year 3</option>
-      </select>
+    <div class="field"><label>EBL period</label>
+      <select id="f-ebl"><option>Block 1</option><option>EBL 1</option><option>Block 2</option><option>EBL 2</option><option>Block 3</option><option>EBL 3</option></select>
     </div>
-    <div class="field">
-      <label>EBL period</label>
-      <select id="f-ebl">
-        <option value="Block 1">Block 1</option>
-        <option value="EBL 1">EBL 1</option>
-        <option value="Block 2">Block 2</option>
-        <option value="EBL 2">EBL 2</option>
-        <option value="Block 3">Block 3</option>
-        <option value="EBL 3">EBL 3</option>
-      </select>
-    </div>
-    <button class="btn-primary" onclick="saveProfile()">Start my logbook →</button>
+    <button class="btn-start" id="btn-start">Start my logbook →</button>
   </div>
-  <div class="setup-note">Your data saves on this device only — not shared with anyone until you submit evidence via the Google Form.</div>
+  <div class="setup-note">Your data saves on this device only.</div>
+</div>
 </div>
 
-<!-- ══ HOME SCREEN ══ -->
-<div id="s-home" class="scr">
+<!-- HOME PAGE -->
+<div id="pg-home" class="page">
   <div class="topbar">
-    <div class="tbr">
-      <svg height="22" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="BluLever Education">
-  <circle cx="12" cy="10" r="4.5" fill="white"/>
-  <circle cx="28" cy="10" r="4.5" fill="white"/>
-  <circle cx="20" cy="24" r="4.5" fill="white"/>
-  <circle cx="8"  cy="24" r="3"   fill="white" opacity=".7"/>
-  <circle cx="32" cy="24" r="3"   fill="white" opacity=".7"/>
-  <line x1="12" y1="10" x2="28" y2="10" stroke="white" stroke-width="2" opacity=".5"/>
-  <line x1="12" y1="10" x2="20" y2="24" stroke="white" stroke-width="2" opacity=".5"/>
-  <line x1="28" y1="10" x2="20" y2="24" stroke="white" stroke-width="2" opacity=".5"/>
-  <line x1="12" y1="10" x2="8"  y2="24" stroke="white" stroke-width="1.5" opacity=".35"/>
-  <line x1="28" y1="10" x2="32" y2="24" stroke="white" stroke-width="1.5" opacity=".35"/>
-  <text x="44" y="14" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-weight="700" font-size="13" fill="white" letter-spacing="1">BLULEVER</text>
-  <text x="44" y="30" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-weight="400" font-size="11" fill="rgba(255,255,255,0.7)" letter-spacing="1">EDUCATION</text>
-</svg>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="tbinfo">
-          <div class="tbn" id="tb-name">–</div>
-          <div class="tbs" id="tb-sub">–</div>
-          <span class="trade-pill" id="tb-trade">–</span>
+    <div class="topbar-row">
+      <svg width="130" height="32" viewBox="0 0 200 52" fill="none">
+        <circle cx="18" cy="13" r="6" fill="white"/>
+        <circle cx="38" cy="13" r="6" fill="white"/>
+        <circle cx="28" cy="31" r="6" fill="white"/>
+        <line x1="18" y1="13" x2="38" y2="13" stroke="white" stroke-width="2" opacity=".4"/>
+        <line x1="18" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+        <line x1="38" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+        <text x="62" y="20" font-family="-apple-system,Arial,sans-serif" font-weight="700" font-size="15" fill="white" letter-spacing="1">BLULEVER</text>
+        <text x="62" y="38" font-family="-apple-system,Arial,sans-serif" font-weight="400" font-size="12" fill="rgba(255,255,255,0.6)" letter-spacing="1">EDUCATION</text>
+      </svg>
+      <div class="t-right">
+        <div class="t-info">
+          <div class="t-name" id="t-name"></div>
+          <div class="t-sub" id="t-sub"></div>
+          <span class="t-pill" id="t-pill"></span>
         </div>
-        <div class="av" id="tb-av" onclick="tab('profile',document.querySelector('#s-home .bnav .nb:last-child'))">–</div>
+        <div class="t-av" id="t-av" onclick="goPage('profile')"></div>
       </div>
     </div>
   </div>
-  <div class="body">
+  <div class="scroll-body">
     <div class="ov">
-      <div class="ovr">
-        <div class="ovp" id="ov-p">0%</div>
-        <div class="ovrt">
-          <div class="ovl">Overall progress</div>
-          <div class="ovt"><div class="ovf" id="ov-f" style="width:0%"></div></div>
-          <div class="ovc" id="ov-c">0 / 710 completions</div>
+      <div class="ov-row">
+        <div class="ov-pct" id="ov-pct">0%</div>
+        <div class="ov-right">
+          <div class="ov-lbl">Overall progress</div>
+          <div class="ov-track"><div class="ov-fill" id="ov-fill" style="width:0%"></div></div>
+          <div class="ov-cnt" id="ov-cnt">0 / 710 completions</div>
         </div>
       </div>
-      <div class="chips" id="ov-chips"></div>
+      <div class="ov-chips" id="ov-chips"></div>
     </div>
-
-    <div class="form-banner" id="form-banner">
-      <div class="form-banner-icon">📋</div>
-      <div class="form-banner-text">
-        <div class="form-banner-title">Submit your Drive folder links</div>
-        <div class="form-banner-sub">Tap each time you create a new WA evidence folder</div>
-      </div>
-      <button class="form-banner-btn" onclick="openForm()">Open Form</button>
-    </div>
-
     <div class="sl">Work modules</div>
-    <div id="wm-cards"></div>
-
+    <div id="wm-list"></div>
     <div class="sl">Employer feedback</div>
-    <div class="fbc">
-      <div class="fbh">
-        <div class="fbhi">💬</div>
-        <div>
-          <div class="fbht">Employer feedback</div>
-          <div class="fbhs">Ticked by your TF or CRM — 1 per module per year</div>
-        </div>
+    <div class="fb-card">
+      <div class="fb-hdr">
+        <div class="fb-icon">💬</div>
+        <div><div class="fb-title">Employer feedback</div><div class="fb-sub">Ticked by your TF or CRM — 1 per module per year</div></div>
       </div>
-      <div id="fb-rows"></div>
+      <div id="fb-list"></div>
     </div>
   </div>
   <div class="bnav">
-    <button class="nb active" onclick="tab('home',this)">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <button class="nb active" onclick="goPage('home');setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       Home
     </button>
-    <button class="nb" onclick="tab('progress',this)">
+    <button class="nb" onclick="goPage('progress');setNav(this)">
       <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       Progress
     </button>
-    <button class="nb" onclick="tab('profile',this)">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <button class="nb" onclick="goPage('profile');setNav(this)">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>
       Profile
     </button>
   </div>
 </div>
 
-<!-- ══ PROGRESS SCREEN ══ -->
-<div id="s-progress" class="scr">
-  <div class="topbar">
-    <div class="tbr">
-      <svg height="22" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="BluLever Education">
-  <circle cx="12" cy="10" r="4.5" fill="white"/>
-  <circle cx="28" cy="10" r="4.5" fill="white"/>
-  <circle cx="20" cy="24" r="4.5" fill="white"/>
-  <circle cx="8"  cy="24" r="3"   fill="white" opacity=".7"/>
-  <circle cx="32" cy="24" r="3"   fill="white" opacity=".7"/>
-  <line x1="12" y1="10" x2="28" y2="10" stroke="white" stroke-width="2" opacity=".5"/>
-  <line x1="12" y1="10" x2="20" y2="24" stroke="white" stroke-width="2" opacity=".5"/>
-  <line x1="28" y1="10" x2="20" y2="24" stroke="white" stroke-width="2" opacity=".5"/>
-  <line x1="12" y1="10" x2="8"  y2="24" stroke="white" stroke-width="1.5" opacity=".35"/>
-  <line x1="28" y1="10" x2="32" y2="24" stroke="white" stroke-width="1.5" opacity=".35"/>
-  <text x="44" y="14" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-weight="700" font-size="13" fill="white" letter-spacing="1">BLULEVER</text>
-  <text x="44" y="30" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-weight="400" font-size="11" fill="rgba(255,255,255,0.7)" letter-spacing="1">EDUCATION</text>
-</svg>
-      <div class="tbinfo"><div class="tbn">Progress</div><div class="tbs">By work module</div></div>
-    </div>
-  </div>
-  <div class="body">
+<!-- PROGRESS PAGE -->
+<div id="pg-progress" class="page">
+  <div class="topbar"><div class="topbar-row">
+    <div class="t-name" style="color:#fff;font-size:15px;font-weight:700">Progress</div>
+    <div class="t-sub" style="color:rgba(255,255,255,.55)">By work module</div>
+  </div></div>
+  <div class="scroll-body">
     <div class="sl">Completions by module</div>
-    <div class="pc" id="prog-bars"></div>
+    <div class="prog-card" id="prog-bars"></div>
     <div class="sl">Summary</div>
-    <div class="pc" id="prog-sum"></div>
-    <div class="in">Your TF and CRM can see your progress when you share your logbook summary. Tap your profile to see your sharing options.</div>
+    <div class="prog-card" id="prog-sum"></div>
   </div>
   <div class="bnav">
-    <button class="nb" onclick="tab('home',this)"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Home</button>
-    <button class="nb active" onclick="tab('progress',this)"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Progress</button>
-    <button class="nb" onclick="tab('profile',this)"><svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Profile</button>
+    <button class="nb" onclick="goPage('home');setNav(this)"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Home</button>
+    <button class="nb active" onclick="goPage('progress');setNav(this)"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Progress</button>
+    <button class="nb" onclick="goPage('profile');setNav(this)"><svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>Profile</button>
   </div>
 </div>
 
-<!-- ══ PROFILE SCREEN ══ -->
-<div id="s-profile" class="scr">
-  <div class="topbar">
-    <div class="tbr">
-      <svg height="22" viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="BluLever Education">
-  <circle cx="12" cy="10" r="4.5" fill="white"/>
-  <circle cx="28" cy="10" r="4.5" fill="white"/>
-  <circle cx="20" cy="24" r="4.5" fill="white"/>
-  <circle cx="8"  cy="24" r="3"   fill="white" opacity=".7"/>
-  <circle cx="32" cy="24" r="3"   fill="white" opacity=".7"/>
-  <line x1="12" y1="10" x2="28" y2="10" stroke="white" stroke-width="2" opacity=".5"/>
-  <line x1="12" y1="10" x2="20" y2="24" stroke="white" stroke-width="2" opacity=".5"/>
-  <line x1="28" y1="10" x2="20" y2="24" stroke="white" stroke-width="2" opacity=".5"/>
-  <line x1="12" y1="10" x2="8"  y2="24" stroke="white" stroke-width="1.5" opacity=".35"/>
-  <line x1="28" y1="10" x2="32" y2="24" stroke="white" stroke-width="1.5" opacity=".35"/>
-  <text x="44" y="14" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-weight="700" font-size="13" fill="white" letter-spacing="1">BLULEVER</text>
-  <text x="44" y="30" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-weight="400" font-size="11" fill="rgba(255,255,255,0.7)" letter-spacing="1">EDUCATION</text>
-</svg>
-      <div class="tbinfo"><div class="tbn">My profile</div><div class="tbs" id="prof-stuno">–</div></div>
+<!-- PROFILE PAGE -->
+<div id="pg-profile" class="page">
+  <div class="topbar"><div class="topbar-row">
+    <div class="t-name" style="color:#fff;font-size:15px;font-weight:700">My profile</div>
+    <div class="t-sub" id="prof-stuno" style="color:rgba(255,255,255,.55)"></div>
+  </div></div>
+  <div class="scroll-body">
+    <div class="prof-sec">
+      <div class="prof-lbl">Apprentice details</div>
+      <div class="prof-row"><span class="prof-key">Full name</span><span class="prof-val" id="p-name"></span></div>
+      <div class="prof-row"><span class="prof-key">Student number</span><span class="prof-val" id="p-stuno"></span></div>
+      <div class="prof-row"><span class="prof-key">Trade</span><span class="prof-val" id="p-trade" style="color:#0F6E56"></span></div>
+      <div class="prof-row"><span class="prof-key">Cohort</span><span class="prof-val" id="p-cohort"></span></div>
+      <div class="prof-row"><span class="prof-key">Year</span><span class="prof-val" id="p-year"></span></div>
+      <div class="prof-row"><span class="prof-key">EBL period</span><span class="prof-val" id="p-ebl"></span></div>
     </div>
-  </div>
-  <div class="body">
-    <div class="is">
-      <div class="il">Apprentice details</div>
-      <div class="ir"><span class="ik">Full name</span><span class="iv" id="p-name">–</span></div>
-      <div class="ir"><span class="ik">Student number</span><span class="iv" id="p-stuno">–</span></div>
-      <div class="ir"><span class="ik">Email</span><span class="iv" id="p-email" style="font-size:12px">–</span></div>
-      <div class="ir"><span class="ik">Trade</span><span class="iv" id="p-trade" style="color:var(--teal)">–</span></div>
-      <div class="ir"><span class="ik">Cohort</span><span class="iv" id="p-cohort">–</span></div>
-      <div class="ir"><span class="ik">Year</span><span class="iv" id="p-year">–</span></div>
-      <div class="ir"><span class="ik">EBL period</span><span class="iv" id="p-ebl">–</span></div>
+    <div class="prof-sec">
+      <div class="prof-lbl">Progress</div>
+      <div class="prof-row"><span class="prof-key">Total completions</span><span class="prof-val" id="p-total"></span></div>
+      <div class="prof-row"><span class="prof-key">% complete</span><span class="prof-val" id="p-pct"></span></div>
     </div>
-    <div class="is">
-      <div class="il">Progress summary</div>
-      <div class="ir"><span class="ik">Total completions</span><span class="iv" id="p-total">–</span></div>
-      <div class="ir"><span class="ik">% complete</span><span class="iv" id="p-pct">–</span></div>
-      <div class="ir"><span class="ik">Status</span><span class="iv" id="p-status">–</span></div>
-    </div>
-    <div class="is">
-      <div class="il">Share your progress</div>
-      <div class="in" style="margin:0;border-radius:0">Tap the button below to copy a summary of your progress. Paste it into a WhatsApp message to your TF or CRM so they can update the tracker.</div>
-    </div>
-    <button class="btn-secondary" onclick="copyProgress()">📋  Copy progress summary</button>
-    <button class="btn-secondary" onclick="editProfile()">✏️  Edit my profile</button>
-    <div class="in">Data saves on this device only. If you change phones, use Export below to back up and restore your progress.</div>
-    <button class="btn-secondary" onclick="exportData()">💾  Export my data</button>
-    <button class="btn-danger" onclick="confirmReset()">Reset all data</button>
+    <div class="note">Tap the button below to copy your progress summary and send it to your TF via WhatsApp.</div>
+    <button class="btn-copy" onclick="copyProgress()">📋 Copy progress summary</button>
+    <button class="btn-copy" onclick="exportData()">💾 Export my data (backup)</button>
+    <button class="btn-reset" onclick="resetData()">Reset all data</button>
   </div>
   <div class="bnav">
-    <button class="nb" onclick="tab('home',this)"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Home</button>
-    <button class="nb" onclick="tab('progress',this)"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Progress</button>
-    <button class="nb active" onclick="tab('profile',this)"><svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Profile</button>
+    <button class="nb" onclick="goPage('home');setNav(this)"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Home</button>
+    <button class="nb" onclick="goPage('progress');setNav(this)"><svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Progress</button>
+    <button class="nb active" onclick="goPage('profile');setNav(this)"><svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>Profile</button>
   </div>
 </div>
 
@@ -399,415 +293,314 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Ar
 </div>
 
 <script>
-// ── WA DATA (Plumbing — all 71 WAs) ──────────────────────────
-const WM=[
+// ── DATA ──────────────────────────────────────────────────────
+var WM=[
   {id:"WM-01",name:"Above Ground & Sanitary Ware",color:"#1A3C5E",max:210,we:[
-    {code:"WE01",title:"Site assessment, drain sizing & risk assessment",
-     was:[{c:"WA0101"},{c:"WA0102"},{c:"WA0103"},{c:"WA0104"}]},
-    {code:"WE02",title:"Install above-ground soil & waste pipes",
-     was:[{c:"WA0201"},{c:"WA0202"},{c:"WA0203"},{c:"WA0204"},{c:"WA0205"}]},
-    {code:"WE03",title:"Install sanitary ware",
-     was:[{c:"WA0301"},{c:"WA0302"},{c:"WA0303"},{c:"WA0304"},{c:"WA0305"},{c:"WA0306"},{c:"WA0307"},{c:"WA0308"},{c:"WA0309"}]},
-    {code:"WE04",title:"Test, commission & housekeeping",
-     was:[{c:"WA0401"},{c:"WA0402"},{c:"WA0403"}]}
+    {code:"WE01",title:"Site assessment & risk assessment",was:["WA0101","WA0102","WA0103","WA0104"]},
+    {code:"WE02",title:"Install above-ground soil & waste pipes",was:["WA0201","WA0202","WA0203","WA0204","WA0205"]},
+    {code:"WE03",title:"Install sanitary ware",was:["WA0301","WA0302","WA0303","WA0304","WA0305","WA0306","WA0307","WA0308","WA0309"]},
+    {code:"WE04",title:"Test, commission & housekeeping",was:["WA0401","WA0402","WA0403"]}
   ]},
   {id:"WM-02",name:"Below-Ground Drainage",color:"#0F6E56",max:140,we:[
-    {code:"WE01",title:"Site & risk assessment",
-     was:[{c:"WA0101"},{c:"WA0102"},{c:"WA0103"},{c:"WA0104"}]},
-    {code:"WE02",title:"Install below-ground drainage pipes",
-     was:[{c:"WA0201"},{c:"WA0202"},{c:"WA0203"},{c:"WA0204"},{c:"WA0205"},{c:"WA0206"},{c:"WA0207"}]},
-    {code:"WE03",title:"Scheduled & unscheduled maintenance",
-     was:[{c:"WA0301"},{c:"WA0302"},{c:"WA0303"}]}
+    {code:"WE01",title:"Site & risk assessment",was:["WA0101","WA0102","WA0103","WA0104"]},
+    {code:"WE02",title:"Install below-ground drainage pipes",was:["WA0201","WA0202","WA0203","WA0204","WA0205","WA0206","WA0207"]},
+    {code:"WE03",title:"Scheduled & unscheduled maintenance",was:["WA0301","WA0302","WA0303"]}
   ]},
   {id:"WM-03",name:"Hot & Cold Water Systems",color:"#854F0B",max:220,we:[
-    {code:"WE01",title:"Site assessment & risk assessment",
-     was:[{c:"WA0101"},{c:"WA0102"},{c:"WA0103"},{c:"WA0104"}]},
-    {code:"WE02",title:"Install hot & cold pressure water pipes",
-     was:[{c:"WA0201"},{c:"WA0202"},{c:"WA0203"},{c:"WA0204"},{c:"WA0205"},{c:"WA0206"},{c:"WA0207"}]},
-    {code:"WE03",title:"Fixed Electric Storage Water Heating",
-     was:[{c:"WA0301"},{c:"WA0302"},{c:"WA0303"},{c:"WA0304"}]},
-    {code:"WE04",title:"Scheduled & unscheduled maintenance",
-     was:[{c:"WA0401"},{c:"WA0402"},{c:"WA0403"},{c:"WA0404"},{c:"WA0405"},{c:"WA0406"},{c:"WA0407"}]}
+    {code:"WE01",title:"Site assessment & risk assessment",was:["WA0101","WA0102","WA0103","WA0104"]},
+    {code:"WE02",title:"Install hot & cold pressure water pipes",was:["WA0201","WA0202","WA0203","WA0204","WA0205","WA0206","WA0207"]},
+    {code:"WE03",title:"Fixed Electric Storage Water Heating",was:["WA0301","WA0302","WA0303","WA0304"]},
+    {code:"WE04",title:"Scheduled & unscheduled maintenance",was:["WA0401","WA0402","WA0403","WA0404","WA0405","WA0406","WA0407"]}
   ]},
   {id:"WM-04",name:"Rainwater Systems",color:"#993556",max:140,we:[
-    {code:"WE01",title:"Plan & prepare installation",
-     was:[{c:"WA0101"},{c:"WA0102"},{c:"WA0103"},{c:"WA0104"}]},
-    {code:"WE02",title:"Install gutters & downpipes",
-     was:[{c:"WA0201"},{c:"WA0202"},{c:"WA0203"},{c:"WA0204"}]},
-    {code:"WE03",title:"Inspect for leaks & blockages",
-     was:[{c:"WA0301"},{c:"WA0302"}]},
-    {code:"WE04",title:"Safe housekeeping & quality",
-     was:[{c:"WA0401"},{c:"WA0402"},{c:"WA0403"},{c:"WA0404"}]}
+    {code:"WE01",title:"Plan & prepare installation",was:["WA0101","WA0102","WA0103","WA0104"]},
+    {code:"WE02",title:"Install gutters & downpipes",was:["WA0201","WA0202","WA0203","WA0204"]},
+    {code:"WE03",title:"Inspect for leaks & blockages",was:["WA0301","WA0302"]},
+    {code:"WE04",title:"Safe housekeeping & quality",was:["WA0401","WA0402","WA0403","WA0404"]}
   ]}
 ];
 
-const FB_TEMPLATE=[
+var FB=[
   {wm:"WM-01",name:"Above Ground & Sanitary Ware"},
   {wm:"WM-02",name:"Below-Ground Drainage"},
   {wm:"WM-03",name:"Hot & Cold Water Systems"},
-  {wm:"WM-04",name:"Rainwater Systems"},
+  {wm:"WM-04",name:"Rainwater Systems"}
 ];
 
-// ── STORAGE KEY ──────────────────────────────────────────────
-const SK="ble_logbook_v1";
+var SK="ble_v2";
+var S={profile:null,counts:{},feedback:{}};
 
-// ── STATE ─────────────────────────────────────────────────────
-let STATE={
-  profile:null,
-  // completions: {wm_wi_wei_wai: count}
-  completions:{},
-  // feedback: {wm_yr: true/false}
-  feedback:{},
-  formUrl:"",
-};
+// ── STORAGE ───────────────────────────────────────────────────
+function saveS(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function loadS(){try{var d=localStorage.getItem(SK);if(d)S=JSON.parse(d);}catch(e){}}
 
-function save(){
-  try{
-    localStorage.setItem(SK,JSON.stringify(STATE));
-  }catch(e){
-    console.warn("localStorage error:",e);
-  }
-}
-function load(){
-  try{
-    const d=localStorage.getItem(SK);
-    if(d) STATE=JSON.parse(d);
-  }catch(e){}
-}
-function flashSave(){
-  // tiny visual confirmation that data saved
-}
-
-// ── PROFILE ───────────────────────────────────────────────────
-function saveProfile(){
-  const name=document.getElementById("f-name").value.trim();
-  const stuno=document.getElementById("f-stuno").value.trim();
-  const email=document.getElementById("f-email").value.trim();
-  const trade=document.getElementById("f-trade").value;
-  const cohort=document.getElementById("f-cohort").value.trim();
-  const year=document.getElementById("f-year").value;
-  const ebl=document.getElementById("f-ebl").value;
-  if(!name||!stuno||!trade||!cohort){
-    alert("Please fill in all fields before continuing.");return;
-  }
-  STATE.profile={name,stuno,email:email||"not set",trade,cohort,year,ebl};
-  save();
-  showApp();
-}
-function editProfile(){
-  if(!STATE.profile)return;
-  const p=STATE.profile;
-  document.getElementById("f-name").value=p.name;
-  document.getElementById("f-stuno").value=p.stuno;
-  document.getElementById("f-email").value=p.email;
-  document.getElementById("f-trade").value=p.trade;
-  document.getElementById("f-cohort").value=p.cohort;
-  document.getElementById("f-year").value=p.year;
-  document.getElementById("f-ebl").value=p.ebl;
-  showScreen("setup");
-}
-
-// ── COMPLETION DATA ───────────────────────────────────────────
-function key(wi,wei,wai){return `${wi}_${wei}_${wai}`;}
-function getN(wi,wei,wai){return STATE.completions[key(wi,wei,wai)]||0;}
-function setN(wi,wei,wai,n){
-  STATE.completions[key(wi,wei,wai)]=n;
-  save();
-}
-function getFB(wm,yr){return STATE.feedback[`${wm}_${yr}`]||false;}
-function setFB(wm,yr,val){STATE.feedback[`${wm}_${yr}`]=val;save();}
+// ── KEY HELPERS ───────────────────────────────────────────────
+function ck(wi,wei,wai){return wi+"_"+wei+"_"+wai;}
+function getC(wi,wei,wai){return S.counts[ck(wi,wei,wai)]||0;}
+function setC(wi,wei,wai,n){S.counts[ck(wi,wei,wai)]=n;saveS();}
+function getFB(wm,yr){return S.feedback[wm+"_"+yr]||false;}
 
 // ── CALCULATIONS ─────────────────────────────────────────────
-function wmTotal(wi){
-  let t=0;
-  WM[wi].we.forEach((we,wei)=>we.was.forEach((_,wai)=>t+=getN(wi,wei,wai)));
+function wmTot(wi){
+  var t=0;
+  for(var wei=0;wei<WM[wi].we.length;wei++)
+    for(var wai=0;wai<WM[wi].we[wei].was.length;wai++)
+      t+=getC(wi,wei,wai);
   return t;
 }
-function grandTotal(){
-  let t=0; WM.forEach((_,wi)=>t+=wmTotal(wi)); return t;
+function grandTot(){var t=0;for(var i=0;i<WM.length;i++)t+=wmTot(i);return t;}
+function maxTot(){return 710;}
+function pct(){return Math.round(grandTot()/maxTot()*100);}
+function bc(n,max){var p=n/max;return p>=1?"bg":p>=.5?"ba":"br";}
+function kc(n){return n===10?"cnt-d":n>0?"cnt-p":"cnt-n";}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function goPage(name){
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});
+  document.getElementById("pg-"+name).classList.add("active");
+  if(name==="progress")buildProgress();
+  if(name==="profile")buildProfile();
 }
-function totalWAs(){
-  return WM.reduce((s,wm)=>s+wm.we.reduce((s2,we)=>s2+we.was.length,0),0);
-}
-function wasDone(){
-  let d=0;
-  WM.forEach((_,wi)=>WM[wi].we.forEach((we,wei)=>we.was.forEach((_,wai)=>{
-    if(getN(wi,wei,wai)===10)d++;
-  })));
-  return d;
-}
-function wasInProg(){
-  let d=0;
-  WM.forEach((_,wi)=>WM[wi].we.forEach((we,wei)=>we.was.forEach((_,wai)=>{
-    const n=getN(wi,wei,wai); if(n>0&&n<10)d++;
-  })));
-  return d;
-}
-function fbCount(){
-  return Object.values(STATE.feedback).filter(Boolean).length;
-}
-function maxComp(){return WM.reduce((s,wm)=>s+wm.max,0);}
-function pct(){return Math.round(grandTotal()/maxComp()*100);}
-function bcl(n,max){const p=n/max;return p>=1?"bg":p>=.5?"ba":"br";}
-function kcl(n){return n===10?"kd":n>0?"kp":"kn";}
-function statusLabel(){
-  const p=pct();
-  if(grandTotal()===0)return"Not started";
-  if(p<50)return"⚠ At risk";
-  if(p<80)return"⚡ Monitor";
-  return"✓ On track";
+function setNav(btn){
+  if(!btn||!btn.closest)return;
+  var nav=btn.closest(".bnav");
+  if(nav)nav.querySelectorAll(".nb").forEach(function(b){b.classList.remove("active");});
+  btn.classList.add("active");
 }
 
-// ── TOPBAR & PROFILE UPDATE ───────────────────────────────────
-function updateTopbar(){
-  if(!STATE.profile)return;
-  const p=STATE.profile;
-  const init=(p.name.split(" ").map(w=>w[0]).join("").slice(0,2)).toUpperCase();
-  document.getElementById("tb-name").textContent=p.name;
-  document.getElementById("tb-sub").textContent=`${p.stuno} · ${p.year} · ${p.ebl}`;
-  document.getElementById("tb-trade").textContent=p.trade.toUpperCase();
-  document.getElementById("tb-av").textContent=init;
-  // profile screen
-  document.getElementById("prof-stuno").textContent=p.stuno;
-  document.getElementById("p-name").textContent=p.name;
-  document.getElementById("p-stuno").textContent=p.stuno;
-  document.getElementById("p-email").textContent=p.email;
-  document.getElementById("p-trade").textContent=p.trade;
-  document.getElementById("p-cohort").textContent=p.cohort;
-  document.getElementById("p-year").textContent=p.year;
-  document.getElementById("p-ebl").textContent=p.ebl;
-}
-function updateProfileStats(){
-  const t=grandTotal(),p=pct();
-  document.getElementById("p-total").textContent=`${t} / ${maxComp()}`;
-  document.getElementById("p-pct").textContent=`${p}%`;
-  document.getElementById("p-status").textContent=statusLabel();
+// ── TOAST ─────────────────────────────────────────────────────
+var toastT;
+function showToast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},2200);
 }
 
-// ── OVERVIEW ─────────────────────────────────────────────────
+// ── SETUP ─────────────────────────────────────────────────────
+function initSetup(){
+  document.getElementById("btn-start").addEventListener("click",function(){
+    var name=document.getElementById("f-name").value.trim();
+    var stuno=document.getElementById("f-stuno").value.trim();
+    var email=document.getElementById("f-email").value.trim();
+    var trade=document.getElementById("f-trade").value;
+    var cohort=document.getElementById("f-cohort").value.trim();
+    var year=document.getElementById("f-year").value;
+    var ebl=document.getElementById("f-ebl").value;
+    if(!name){alert("Please enter your full name.");return;}
+    if(!stuno){alert("Please enter your student number.");return;}
+    if(!trade){alert("Please select your trade.");return;}
+    if(!cohort){alert("Please enter your cohort.");return;}
+    S.profile={name:name,stuno:stuno,email:email||"",trade:trade,cohort:cohort,year:year,ebl:ebl};
+    saveS();
+    loadHome();
+  });
+}
+
+// ── HOME ──────────────────────────────────────────────────────
+function loadHome(){
+  var p=S.profile;
+  if(!p)return;
+  var init=(p.name.split(" ").map(function(w){return w[0]||"";}).join("").slice(0,2)).toUpperCase();
+  document.getElementById("t-name").textContent=p.name;
+  document.getElementById("t-sub").textContent=p.stuno+" · "+p.year+" · "+p.ebl;
+  document.getElementById("t-pill").textContent=p.trade.toUpperCase();
+  document.getElementById("t-av").textContent=init;
+  buildWMCards();
+  buildFeedback();
+  updateOv();
+  goPage("home");
+}
+
 function updateOv(){
-  const t=grandTotal(),mx=maxComp(),p=pct();
-  document.getElementById("ov-p").textContent=p+"%";
-  document.getElementById("ov-f").style.width=p+"%";
-  document.getElementById("ov-c").textContent=`${t} / ${mx} completions`;
-  const fb=fbCount();
-  let chips=p===0?"":(p<50?`<span class="chip cr">⚠ At risk</span>`
-    :p<80?`<span class="chip ca">⚡ Monitor</span>`
-    :`<span class="chip cg">✓ On track</span>`);
-  if(fb>0)chips+=`<span class="chip ca">${fb}/12 feedback</span>`;
+  var t=grandTot(),p=pct();
+  document.getElementById("ov-pct").textContent=p+"%";
+  document.getElementById("ov-fill").style.width=p+"%";
+  document.getElementById("ov-cnt").textContent=t+" / "+maxTot()+" completions";
+  var fb=Object.values(S.feedback).filter(Boolean).length;
+  var chips="";
+  if(t>0){
+    if(p<50)chips+='<span class="chip chip-r">⚠ At risk</span>';
+    else if(p<80)chips+='<span class="chip chip-a">⚡ Monitor</span>';
+    else chips+='<span class="chip chip-g">✓ On track</span>';
+  }
+  if(fb>0)chips+='<span class="chip chip-a">'+fb+"/12 feedback</span>";
   document.getElementById("ov-chips").innerHTML=chips;
 }
 
 // ── WM CARDS ─────────────────────────────────────────────────
-function buildCards(){
-  const el=document.getElementById("wm-cards");
+function buildWMCards(){
+  var el=document.getElementById("wm-list");
   el.innerHTML="";
-  WM.forEach((wm,wi)=>{
-    const tot=wmTotal(wi),p=Math.round(tot/wm.max*100);
-    const div=document.createElement("div");div.className="wmc";
-    div.innerHTML=`
-      <div class="wmh" onclick="twm(${wi})">
-        <div class="wms" style="background:${wm.color}"></div>
-        <div class="wmi">
-          <div class="wmn" style="color:${wm.color}">${wm.id}: ${wm.name}</div>
-          <div class="wmp">${p}% · ${tot}/${wm.max}</div>
-        </div>
-        <span class="wmb ${bcl(tot,wm.max)}">${tot}/${wm.max}</span>
-        <span class="wch" id="wch-${wi}">&#8964;</span>
-      </div>
-      <div class="wb" id="wb-${wi}">
-        ${wm.we.map((we,wei)=>`
-          <div class="wes">
-            <div class="wet">${we.code} — ${we.title}</div>
-            ${we.was.map((wa,wai)=>`
-              <div class="war">
-                <span class="wac">${wa.c}</span>
-                <div class="dots" id="dt-${wi}-${wei}-${wai}"></div>
-                <span class="wak ${kcl(getN(wi,wei,wai))}" id="wk-${wi}-${wei}-${wai}">${getN(wi,wei,wai)}/10</span>
-              </div>`).join("")}
-          </div>`).join("")}
-      </div>`;
-    el.appendChild(div);
-    wm.we.forEach((_,wei)=>wm.we[wei].was.forEach((_,wai)=>renderDots(wi,wei,wai)));
-  });
-}
-function renderDots(wi,wei,wai){
-  const n=getN(wi,wei,wai);
-  const el=document.getElementById(`dt-${wi}-${wei}-${wai}`);
-  if(!el)return;
-  el.innerHTML="";
-  for(let i=1;i<=10;i++){
-    const d=document.createElement("div");
-    d.className="dot"+(i<=n?" done":"");
-    d.onclick=()=>tDot(wi,wei,wai,i);
-    el.appendChild(d);
+  for(var wi=0;wi<WM.length;wi++){
+    (function(wi){
+      var wm=WM[wi];
+      var tot=wmTot(wi);
+      var p=Math.round(tot/wm.max*100);
+      var card=document.createElement("div");
+      card.className="wm-card";
+      var bodyHTML="";
+      for(var wei=0;wei<wm.we.length;wei++){
+        var we=wm.we[wei];
+        var wasHTML="";
+        for(var wai=0;wai<we.was.length;wai++){
+          var n=getC(wi,wei,wai);
+          var dotsHTML="";
+          for(var d=1;d<=10;d++){
+            dotsHTML+='<div class="dot'+(d<=n?" done":"")+'" data-wi="'+wi+'" data-wei="'+wei+'" data-wai="'+wai+'" data-d="'+d+'"></div>';
+          }
+          wasHTML+='<div class="wa-row">'
+            +'<span class="wa-code">'+we.was[wai]+'</span>'
+            +'<div class="dots">'+dotsHTML+'</div>'
+            +'<span class="wa-cnt '+kc(n)+'" id="wk-'+wi+'-'+wei+'-'+wai+'">'+n+'/10</span>'
+            +'</div>';
+        }
+        bodyHTML+='<div class="we-sec"><div class="we-title">'+we.code+' — '+we.title+'</div>'+wasHTML+'</div>';
+      }
+      card.innerHTML='<div class="wm-hdr" id="wh-'+wi+'">'
+        +'<div class="wm-stripe" style="background:'+wm.color+'"></div>'
+        +'<div class="wm-info"><div class="wm-name" style="color:'+wm.color+'">'+wm.id+': '+wm.name+'</div>'
+        +'<div class="wm-prog">'+p+'% · '+tot+'/'+wm.max+'</div></div>'
+        +'<span class="wm-badge '+bc(tot,wm.max)+'" id="wb-'+wi+'">'+tot+'/'+wm.max+'</span>'
+        +'<span class="wm-chev" id="wc-'+wi+'">&#8964;</span>'
+        +'</div>'
+        +'<div class="wm-body" id="wbd-'+wi+'">'+bodyHTML+'</div>';
+      el.appendChild(card);
+      // Toggle
+      document.getElementById("wh-"+wi).addEventListener("click",function(){
+        document.getElementById("wbd-"+wi).classList.toggle("open");
+        document.getElementById("wc-"+wi).classList.toggle("open");
+      });
+      // Dot clicks
+      card.querySelectorAll(".dot").forEach(function(dot){
+        dot.addEventListener("click",function(e){
+          e.stopPropagation();
+          var wi2=parseInt(this.dataset.wi);
+          var wei2=parseInt(this.dataset.wei);
+          var wai2=parseInt(this.dataset.wai);
+          var d=parseInt(this.dataset.d);
+          var cur=getC(wi2,wei2,wai2);
+          var newN=(d===cur)?d-1:d;
+          setC(wi2,wei2,wai2,newN);
+          // Update dots in this row
+          var dotsEl=this.parentElement;
+          dotsEl.querySelectorAll(".dot").forEach(function(dt,i){
+            dt.classList.toggle("done",i<newN);
+          });
+          // Update count label
+          var kEl=document.getElementById("wk-"+wi2+"-"+wei2+"-"+wai2);
+          if(kEl){kEl.textContent=newN+"/10";kEl.className="wa-cnt "+kc(newN);}
+          // Update WM badge
+          var newTot=wmTot(wi2);
+          var badge=document.getElementById("wb-"+wi2);
+          if(badge){badge.textContent=newTot+"/"+WM[wi2].max;badge.className="wm-badge "+bc(newTot,WM[wi2].max);}
+          var prog=document.querySelector("#wh-"+wi2+" .wm-prog");
+          if(prog)prog.textContent=Math.round(newTot/WM[wi2].max*100)+"% · "+newTot+"/"+WM[wi2].max;
+          updateOv();
+          showToast(newN===10?"Complete ✓":"Saved: "+newN+"/10");
+        });
+      });
+    })(wi);
   }
-}
-function tDot(wi,wei,wai,i){
-  const cur=getN(wi,wei,wai);
-  const newN=(i===cur)?i-1:i;
-  setN(wi,wei,wai,newN);
-  renderDots(wi,wei,wai);
-  const kEl=document.getElementById(`wk-${wi}-${wei}-${wai}`);
-  if(kEl){kEl.textContent=`${newN}/10`;kEl.className=`wak ${kcl(newN)}`;}
-  // update WM header
-  const tot=wmTotal(wi);
-  const wmc=document.querySelector(`#wb-${wi}`).previousElementSibling;
-  const badge=wmc.querySelector(".wmb");
-  const prog=wmc.querySelector(".wmp");
-  if(badge){badge.textContent=`${tot}/${WM[wi].max}`;badge.className=`wmb ${bcl(tot,WM[wi].max)}`;}
-  if(prog)prog.textContent=`${Math.round(tot/WM[wi].max*100)}% · ${tot}/${WM[wi].max}`;
-  updateOv();
-  updateProfileStats();
-  updateProgress();
-  toast(newN===10?`${WM[wi].we.flatMap(we=>we.was)[wai]?.c||"WA"} complete ✓`:`Saved: ${newN}/10`);
-}
-function twm(wi){
-  document.getElementById(`wb-${wi}`).classList.toggle("open");
-  document.getElementById(`wch-${wi}`).classList.toggle("open");
 }
 
 // ── FEEDBACK ─────────────────────────────────────────────────
-function buildFB(){
-  const el=document.getElementById("fb-rows");
+function buildFeedback(){
+  var el=document.getElementById("fb-list");
   el.innerHTML="";
-  FB_TEMPLATE.forEach(fb=>{
-    const row=document.createElement("div");row.className="fbr";
-    row.innerHTML=`
-      <div class="fbw">${fb.wm}<br><span class="fbws">${fb.name}</span></div>
-      <div class="fby">
-        ${[1,2,3].map(yr=>`<div class="yr ${getFB(fb.wm,yr)?"done":""}" title="Year ${yr}">Y${yr}</div>`).join("")}
-      </div>`;
-    el.appendChild(row);
-  });
-}
-
-// ── PROGRESS SCREEN ───────────────────────────────────────────
-function updateProgress(){
-  const pb=document.getElementById("prog-bars");
-  if(!pb)return;
-  pb.innerHTML=WM.map((wm,wi)=>{
-    const t=wmTotal(wi),p=Math.round(t/wm.max*100);
-    return`<div class="pr">
-      <span class="prl" style="color:${wm.color}">${wm.id}</span>
-      <div class="prt"><div class="prf" style="background:${wm.color};width:${p}%"></div></div>
-      <span class="prk" style="color:${wm.color}">${t}/${wm.max}</span>
-    </div>`;
-  }).join("");
-  const tot=grandTotal(),dn=wasDone(),ip=wasInProg(),ns=totalWAs()-dn-ip,fb=fbCount();
-  document.getElementById("prog-sum").innerHTML=`
-    <div class="pr"><span class="ik">Total completions</span><span class="iv" style="font-size:13px">${tot}/${maxComp()}</span></div>
-    <div class="pr"><span class="ik">WAs fully complete</span><span class="iv" style="font-size:13px;color:var(--dgreen)">${dn}/${totalWAs()}</span></div>
-    <div class="pr"><span class="ik">WAs in progress</span><span class="iv" style="font-size:13px;color:var(--damber)">${ip}/${totalWAs()}</span></div>
-    <div class="pr"><span class="ik">WAs not started</span><span class="iv" style="font-size:13px;color:var(--dred)">${ns}/${totalWAs()}</span></div>
-    <div class="pr"><span class="ik">Employer feedback</span><span class="iv" style="font-size:13px">${fb}/12</span></div>`;
-}
-
-// ── FORM LINK ─────────────────────────────────────────────────
-function openForm(){
-  if(STATE.formUrl&&STATE.formUrl.startsWith("http")){
-    window.open(STATE.formUrl,"_blank");
-  } else {
-    toast("Form link not set — ask your TF for the Google Form URL");
+  for(var i=0;i<FB.length;i++){
+    var fb=FB[i];
+    var yrs="";
+    for(var yr=1;yr<=3;yr++){
+      yrs+='<div class="yr'+(getFB(fb.wm,yr)?" done":"")+'">Y'+yr+'</div>';
+    }
+    el.innerHTML+='<div class="fb-row">'
+      +'<div class="fb-wm">'+fb.wm+'<br><span class="fb-wm-sub">'+fb.name+'</span></div>'
+      +'<div class="fb-yrs">'+yrs+'</div></div>';
   }
 }
 
-// ── SHARE / EXPORT ────────────────────────────────────────────
+// ── PROGRESS ─────────────────────────────────────────────────
+function buildProgress(){
+  var bars=document.getElementById("prog-bars");
+  var sum=document.getElementById("prog-sum");
+  if(!bars)return;
+  bars.innerHTML="";
+  for(var i=0;i<WM.length;i++){
+    var wm=WM[i];
+    var t=wmTot(i);
+    var p=Math.round(t/wm.max*100);
+    bars.innerHTML+='<div class="prog-row">'
+      +'<span class="prog-lbl" style="color:'+wm.color+'">'+wm.id+'</span>'
+      +'<div class="prog-track"><div class="prog-fill" style="background:'+wm.color+';width:'+p+'%"></div></div>'
+      +'<span class="prog-cnt" style="color:'+wm.color+'">'+t+'/'+wm.max+'</span></div>';
+  }
+  var tot=grandTot();
+  var done=0,inprog=0,total_was=0;
+  for(var wi=0;wi<WM.length;wi++)
+    for(var wei=0;wei<WM[wi].we.length;wei++)
+      for(var wai=0;wai<WM[wi].we[wei].was.length;wai++){
+        total_was++;
+        var n=getC(wi,wei,wai);
+        if(n===10)done++;else if(n>0)inprog++;
+      }
+  var fb=Object.values(S.feedback).filter(Boolean).length;
+  sum.innerHTML='<div class="prog-row"><span style="font-size:13px;color:#5F5E5A">Total completions</span><span style="font-size:13px;font-weight:700;color:#1A3C5E">'+tot+'/'+maxTot()+'</span></div>'
+    +'<div class="prog-row"><span style="font-size:13px;color:#5F5E5A">WAs fully complete</span><span style="font-size:13px;font-weight:700;color:#085041">'+done+'/'+total_was+'</span></div>'
+    +'<div class="prog-row"><span style="font-size:13px;color:#5F5E5A">WAs in progress</span><span style="font-size:13px;font-weight:700;color:#633806">'+inprog+'/'+total_was+'</span></div>'
+    +'<div class="prog-row"><span style="font-size:13px;color:#5F5E5A">Employer feedback</span><span style="font-size:13px;font-weight:700;color:#1A3C5E">'+fb+'/12</span></div>';
+}
+
+// ── PROFILE ───────────────────────────────────────────────────
+function buildProfile(){
+  var p=S.profile;if(!p)return;
+  document.getElementById("prof-stuno").textContent=p.stuno;
+  document.getElementById("p-name").textContent=p.name;
+  document.getElementById("p-stuno").textContent=p.stuno;
+  document.getElementById("p-trade").textContent=p.trade;
+  document.getElementById("p-cohort").textContent=p.cohort;
+  document.getElementById("p-year").textContent=p.year;
+  document.getElementById("p-ebl").textContent=p.ebl;
+  document.getElementById("p-total").textContent=grandTot()+"/"+maxTot();
+  document.getElementById("p-pct").textContent=pct()+"%";
+}
+
 function copyProgress(){
-  if(!STATE.profile){toast("No profile set up yet");return;}
-  const p=STATE.profile;
-  const t=grandTotal(),pct2=pct(),fb=fbCount();
-  const wmLines=WM.map((wm,wi)=>`  ${wm.id}: ${wmTotal(wi)}/${wm.max}`).join("
+  var p=S.profile;if(!p){showToast("No profile yet");return;}
+  var lines=["BluLever Logbook Progress","========================",
+    "Name: "+p.name,"Student: "+p.stuno,"Trade: "+p.trade,
+    "Cohort: "+p.cohort+" | "+p.year+" | "+p.ebl,"",
+    "Total: "+grandTot()+"/"+maxTot()+" ("+pct()+"%)","-"];
+  for(var i=0;i<WM.length;i++)lines.push("  "+WM[i].id+": "+wmTot(i)+"/"+WM[i].max);
+  lines.push("","Date: "+new Date().toLocaleDateString("en-ZA"));
+  var txt=lines.join("
 ");
-  const txt=`BluLever Logbook Progress Summary
-==============================
-Name:      ${p.name}
-Student:   ${p.stuno}
-Trade:     ${p.trade}
-Cohort:    ${p.cohort}
-Year:      ${p.year} / ${p.ebl}
-
-Overall: ${t}/${maxComp()} completions (${pct2}%)
-Status:  ${statusLabel()}
-
-By module:
-${wmLines}
-
-Feedback received: ${fb}/12
-==============================
-Generated: ${new Date().toLocaleDateString("en-ZA")}`;
   if(navigator.clipboard){
-    navigator.clipboard.writeText(txt).then(()=>toast("Progress summary copied — paste into WhatsApp!")).catch(()=>fallbackCopy(txt));
-  } else { fallbackCopy(txt); }
+    navigator.clipboard.writeText(txt).then(function(){showToast("Copied — paste into WhatsApp!");}).catch(function(){prompt("Copy this:",txt);});
+  }else{prompt("Copy this:",txt);}
 }
-function fallbackCopy(txt){
-  const ta=document.createElement("textarea");
-  ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";
-  document.body.appendChild(ta);ta.focus();ta.select();
-  try{document.execCommand("copy");toast("Progress summary copied!");}
-  catch(e){toast("Could not copy — please screenshot this screen");}
-  document.body.removeChild(ta);
-}
+
 function exportData(){
-  const json=JSON.stringify(STATE,null,2);
-  const blob=new Blob([json],{type:"application/json"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  const p=STATE.profile;
-  a.download=p?`BLE_Logbook_${p.stuno}.json`:"BLE_Logbook_backup.json";
+  var blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");
+  a.href=url;a.download="BLE_Logbook_"+(S.profile?S.profile.stuno:"backup")+".json";
   a.click();URL.revokeObjectURL(url);
-  toast("Data exported — save this file safely");
+  showToast("Data exported successfully");
 }
-function confirmReset(){
-  if(confirm("This will permanently delete all your progress from this device. Are you sure?")){
+
+function resetData(){
+  if(confirm("Delete all your progress permanently?")){
     localStorage.removeItem(SK);
-    STATE={profile:null,completions:{},feedback:{},formUrl:""};
-    showScreen("setup");
-    toast("Data cleared");
+    S={profile:null,counts:{},feedback:{}};
+    goPage("setup");
+    showToast("Data cleared");
   }
-}
-
-// ── NAVIGATION ────────────────────────────────────────────────
-function showScreen(name){
-  document.querySelectorAll(".scr").forEach(s=>s.classList.remove("on"));
-  document.getElementById("s-"+name).classList.add("on");
-}
-function tab(name,btn){
-  showScreen(name);
-  if(btn&&btn.closest(".bnav")){
-    btn.closest(".bnav").querySelectorAll(".nb").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-  }
-  if(name==="progress")updateProgress();
-  if(name==="profile"){updateTopbar();updateProfileStats();}
-}
-function showApp(){
-  try{
-    updateTopbar();
-    buildCards();
-    buildFB();
-    updateOv();
-    updateProgress();
-    showScreen("home");
-  }catch(err){
-    console.error("showApp error:",err);
-    alert("Error loading app: "+err.message);
-  }
-}
-
-// ── TOAST ─────────────────────────────────────────────────────
-let toastT;
-function toast(msg){
-  const t=document.getElementById("toast");
-  t.textContent=msg;t.classList.add("show");
-  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2400);
 }
 
 // ── BOOT ─────────────────────────────────────────────────────
-load();
-if(STATE.profile){showApp();}
-else{showScreen("setup");}
+loadS();
+initSetup();
+if(S.profile){loadHome();}
 </script>
 </body>
 </html>
