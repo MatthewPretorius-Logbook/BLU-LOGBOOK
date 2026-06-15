@@ -1,2 +1,0 @@
-# BLU-LOGBOOK
-Logbooks
