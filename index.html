@@ -8,8 +8,9 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#1A3C5E;display:flex;justify-content:center;min-height:100vh}
 .app{width:100%;max-width:430px;background:#fff;min-height:100vh;display:flex;flex-direction:column;position:relative}
-.page{display:none;flex-direction:column;flex:1}
-.page.active{display:flex}
+.page{display:none;flex-direction:column;flex:1}.page.active{display:flex}
+
+/* SETUP */
 .setup-wrap{padding:28px 18px 40px;background:#1A3C5E;flex:1;overflow-y:auto}
 .logo{text-align:center;margin-bottom:24px}
 .card{background:#fff;border-radius:16px;padding:20px 18px}
@@ -21,8 +22,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
 .field input:focus,.field select:focus{border-color:#0F6E56;background:#fff}
 .err{color:#E24B4A;font-size:12px;margin-top:6px;display:none}
 .btn-start{display:block;width:100%;padding:14px;background:#0F6E56;color:#fff;font-size:16px;font-weight:700;border:none;border-radius:10px;cursor:pointer;margin-top:10px}
-.btn-start:active{background:#085041}
-.note{font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-top:14px;line-height:1.7;padding:0 8px}
+.setup-note{font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-top:14px;line-height:1.7;padding:0 8px}
+
+/* TOPBAR */
 .topbar{background:#1A3C5E;padding:10px 14px;flex-shrink:0}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between}
 .t-right{display:flex;align-items:center;gap:8px}
@@ -30,6 +32,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
 .t-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
 .t-pill{background:rgba(245,184,0,.2);color:#F5B800;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:inline-block;margin-top:2px}
 .t-av{width:32px;height:32px;border-radius:50%;background:#F5B800;color:#1A3C5E;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+
+/* BODY */
 .body{flex:1;overflow-y:auto;padding-bottom:70px}
 .ov{margin:12px;background:#1A3C5E;border-radius:14px;padding:14px}
 .ov-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
@@ -40,6 +44,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
 .ov-fi{height:100%;background:#F5B800;border-radius:4px;transition:width .4s}
 .ov-cn{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px}
 .sl{font-size:10px;font-weight:700;color:#B4B2A9;letter-spacing:.08em;text-transform:uppercase;padding:10px 14px 4px}
+
+/* WM CARDS */
 .wmc{margin:0 10px 8px;border-radius:12px;border:1px solid #E2EBF0;overflow:hidden;background:#fff}
 .wmh{display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer;user-select:none}
 .wms{width:4px;height:32px;border-radius:2px;flex-shrink:0}
@@ -50,13 +56,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
 .bg{background:#E1F5EE;color:#085041}.ba{background:#FAEEDA;color:#633806}.br{background:#FCEBEB;color:#791F1F}
 .wch{font-size:13px;color:#B4B2A9;transition:transform .2s;flex-shrink:0}
 .wch.open{transform:rotate(180deg)}
-.wbd{display:none;border-top:1px solid #E2EBF0}
-.wbd.open{display:block}
-.wes{padding:8px 12px;border-bottom:1px solid #E2EBF0}
-.wes:last-child{border-bottom:none}
-.wet{font-size:10px;font-weight:700;color:#B4B2A9;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px}
-.war{display:flex;align-items:center;gap:5px;margin-bottom:5px}
-.war:last-child{margin-bottom:0}
+.wbd{display:none;border-top:1px solid #E2EBF0}.wbd.open{display:block}
+.wes{padding:8px 12px;border-bottom:1px solid #E2EBF0}.wes:last-child{border-bottom:none}
+.wet{font-size:10px;font-weight:700;color:#B4B2A9;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+
+/* WA ROW — completion dots + folder button */
+.war{margin-bottom:10px}.war:last-child{margin-bottom:0}
+.war-top{display:flex;align-items:center;gap:5px;margin-bottom:4px}
 .wac{font-size:10px;color:#B4B2A9;min-width:46px;font-family:monospace}
 .dots{display:flex;gap:2px;flex:1}
 .dot{width:21px;height:21px;border-radius:50%;border:1.5px solid #E2EBF0;background:#F4F6F8;cursor:pointer;flex-shrink:0;transition:all .1s;display:inline-flex;align-items:center;justify-content:center}
@@ -64,6 +70,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
 .dot.done::after{content:'';width:5px;height:5px;background:#fff;border-radius:50%}
 .wak{font-size:11px;font-weight:700;min-width:26px;text-align:right}
 .cd{color:#085041}.cp{color:#633806}.cn{color:#B4B2A9}
+
+/* EVIDENCE ROW — folder link per WA */
+.war-ev{display:flex;align-items:center;gap:6px;padding-left:51px}
+.ev-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;border:1.5px solid #E2EBF0;background:#F4F6F8;font-size:11px;font-weight:600;color:#5F5E5A;cursor:pointer;white-space:nowrap;text-decoration:none;flex-shrink:0}
+.ev-btn.linked{background:#E6F1FB;border-color:#85B7EB;color:#185FA5}
+.ev-btn svg{width:13px;height:13px;flex-shrink:0}
+.ev-add{padding:5px 10px;border-radius:8px;border:1.5px dashed #B4B2A9;background:none;font-size:11px;color:#B4B2A9;cursor:pointer;white-space:nowrap}
+.ev-add:hover{border-color:#0F6E56;color:#0F6E56}
+
+/* FOLDER MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:430px}
+.modal h3{font-size:17px;font-weight:700;color:#1A3C5E;margin-bottom:6px}
+.modal p{font-size:13px;color:#5F5E5A;margin-bottom:16px;line-height:1.5}
+.modal input{width:100%;padding:11px 12px;border-radius:8px;border:1.5px solid #E2EBF0;font-size:14px;color:#1A3C5E;background:#F4F6F8;outline:none;font-family:inherit;margin-bottom:12px}
+.modal input:focus{border-color:#0F6E56;background:#fff}
+.modal-btns{display:flex;gap:8px}
+.modal-btns button{flex:1;padding:12px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none}
+.btn-save{background:#0F6E56;color:#fff}
+.btn-cancel{background:#F4F6F8;color:#5F5E5A}
+.modal-hint{font-size:11px;color:#B4B2A9;margin-top:10px;line-height:1.6}
+
+/* FEEDBACK */
 .fbc{margin:0 10px 8px;border-radius:12px;border:1px solid #FAC775;background:#FFFBF0;overflow:hidden}
 .fbh{padding:9px 12px;border-bottom:1px solid #FAC775;display:flex;align-items:center;gap:7px}
 .fbi{width:26px;height:26px;background:#F5B800;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
@@ -76,17 +106,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
 .fby{display:flex;gap:4px}
 .yr{width:28px;height:28px;border-radius:50%;border:1.5px solid #E2EBF0;background:#fff;font-size:10px;font-weight:700;color:#B4B2A9;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .yr.done{background:#1D9E75;border-color:#0F6E56;color:#fff}
+
+/* BOTTOM NAV */
 .bnav{position:absolute;bottom:0;left:0;right:0;display:flex;background:#fff;border-top:1px solid #E2EBF0;z-index:10}
 .nb{flex:1;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:none;background:none;font-size:10px;font-weight:600;color:#B4B2A9}
 .nb.active{color:#1A3C5E}
 .nb svg{width:20px;height:20px}
+
+/* PROGRESS */
 .pcard{margin:12px;border-radius:12px;border:1px solid #E2EBF0;overflow:hidden}
 .prow{display:flex;align-items:center;padding:9px 12px;border-bottom:1px solid #E2EBF0;gap:10px}
 .prow:last-child{border-bottom:none}
 .plbl{font-size:12px;font-weight:700;min-width:52px}
 .ptr{flex:1;height:7px;background:#E2EBF0;border-radius:4px;overflow:hidden}
-.pfi{height:100%;border-radius:4px;transition:width .4s}
+.pfi{height:100%;border-radius:4px}
 .pcn{font-size:11px;font-weight:700;min-width:50px;text-align:right}
+
+/* PROFILE */
 .psec{padding:12px 14px;border-bottom:1px solid #E2EBF0}
 .plb{font-size:10px;font-weight:700;color:#B4B2A9;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
 .pr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #F4F6F8}
@@ -95,6 +131,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
 .infon{font-size:12px;color:#5F5E5A;line-height:1.6;padding:10px 13px;background:#F4F6F8;margin:10px;border-radius:8px}
 .bcopy{display:block;width:calc(100% - 24px);margin:0 12px 10px;padding:11px;border-radius:8px;border:1.5px solid #E2EBF0;background:#fff;color:#1A3C5E;font-size:13px;font-weight:600;cursor:pointer}
 .breset{display:block;width:calc(100% - 24px);margin:0 12px 12px;padding:11px;border-radius:8px;border:1.5px solid #FCEBEB;background:none;color:#791F1F;font-size:13px;font-weight:600;cursor:pointer}
+
+/* TOAST */
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1A3C5E;color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:100px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
 </style>
@@ -102,6 +140,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
 <body>
 <div class="app">
 
+<!-- SETUP -->
 <div id="pg-setup" class="page active">
 <div class="setup-wrap">
   <div class="logo">
@@ -120,7 +159,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
   </div>
   <div class="card">
     <h2>Welcome to your logbook</h2>
-    <p>Set up your profile once — your progress saves automatically on this device.</p>
+    <p>Set up your profile once. Your progress saves automatically on this device.</p>
     <div class="field"><label>Full name *</label><input id="f-name" type="text" placeholder="e.g. Thabo Nkosi"></div>
     <div class="field"><label>Student number *</label><input id="f-stuno" type="text" placeholder="e.g. BLE2023001"></div>
     <div class="field"><label>BluLever email</label><input id="f-email" type="email" placeholder="name@blulever.com"></div>
@@ -140,13 +179,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
     <div class="field"><label>EBL period</label>
       <select id="f-ebl"><option>Block 1</option><option>EBL 1</option><option>Block 2</option><option>EBL 2</option><option>Block 3</option><option>EBL 3</option></select>
     </div>
-    <div class="err" id="err-msg">Please fill in all required fields (marked *).</div>
+    <div class="err" id="err-msg">Please fill in all required fields marked *</div>
     <button class="btn-start" id="btn-start">Start my logbook</button>
   </div>
-  <div class="note">Your data saves on this device only — private to you.</div>
+  <div class="setup-note">Your data saves on this device only — private to you.</div>
 </div>
 </div>
 
+<!-- HOME -->
 <div id="pg-home" class="page">
   <div class="topbar">
     <div class="topbar-inner">
@@ -184,7 +224,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
     <div id="wm-list"></div>
     <div class="sl">Employer feedback</div>
     <div class="fbc">
-      <div class="fbh"><div class="fbi">&#128172;</div><div><div class="fbt">Employer feedback</div><div class="fbs">Ticked by your TF or CRM - 1 per module per year</div></div></div>
+      <div class="fbh">
+        <div class="fbi">&#128172;</div>
+        <div><div class="fbt">Employer feedback</div><div class="fbs">Ticked by your TF or CRM — 1 per module per year</div></div>
+      </div>
       <div id="fb-list"></div>
     </div>
   </div>
@@ -195,6 +238,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
   </div>
 </div>
 
+<!-- PROGRESS -->
 <div id="pg-progress" class="page">
   <div class="topbar"><div class="topbar-inner"><div style="color:#fff;font-size:14px;font-weight:700">Progress</div></div></div>
   <div class="body">
@@ -210,6 +254,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
   </div>
 </div>
 
+<!-- PROFILE -->
 <div id="pg-profile" class="page">
   <div class="topbar"><div class="topbar-inner"><div style="color:#fff;font-size:14px;font-weight:700">My profile</div><div class="t-sub" id="ps-stuno"></div></div></div>
   <div class="body">
@@ -224,8 +269,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
     </div>
     <div class="psec">
       <div class="plb">Progress</div>
-      <div class="pr"><span class="pk">Total</span><span class="pv" id="p-tot"></span></div>
-      <div class="pr"><span class="pk">Complete</span><span class="pv" id="p-pct"></span></div>
+      <div class="pr"><span class="pk">Total completions</span><span class="pv" id="p-tot"></span></div>
+      <div class="pr"><span class="pk">% complete</span><span class="pv" id="p-pct"></span></div>
     </div>
     <div class="infon">Tap Copy to send your progress summary to your TF via WhatsApp.</div>
     <button class="bcopy" onclick="copyProg()">&#128203; Copy progress summary</button>
@@ -239,8 +284,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
   </div>
 </div>
 
+<!-- FOLDER LINK MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title">Link evidence folder</h3>
+    <p>Create a folder in Google Drive for this WA, then paste the folder link below. You only need to do this once per WA.</p>
+    <input id="modal-input" type="url" placeholder="Paste Google Drive folder link here...">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveFolder()">Save link</button>
+    </div>
+    <div class="modal-hint">How to get the link: Open Google Drive → long-press your WA folder → Share → Copy link → paste above.</div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 </div>
+
 <script>
 var WM=[
   {id:"WM-01",name:"Above Ground & Sanitary Ware",color:"#1A3C5E",max:210,we:[
@@ -274,19 +334,42 @@ var FB=[
   {wm:"WM-04",name:"Rainwater Systems"}
 ];
 var SK="ble_v3";
-var S={p:null,c:{},f:{}};
+var S={p:null,c:{},f:{},folders:{}};
 function sv(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
-function ld(){try{var d=localStorage.getItem(SK);if(d)S=JSON.parse(d);}catch(e){}}
+function ld(){try{var d=localStorage.getItem(SK);if(d){S=JSON.parse(d);if(!S.folders)S.folders={};}}catch(e){}}
 function gc(wi,wei,wai){return(S.c[wi+"_"+wei+"_"+wai])||0;}
 function sc(wi,wei,wai,n){S.c[wi+"_"+wei+"_"+wai]=n;sv();}
 function gf(wm,yr){return S.f[wm+"_"+yr]||false;}
+function gfolder(wi,wei,wai){return S.folders[wi+"_"+wei+"_"+wai]||"";}
+function sfolder(wi,wei,wai,url){S.folders[wi+"_"+wei+"_"+wai]=url;sv();}
 function wt(wi){var t=0;for(var a=0;a<WM[wi].we.length;a++)for(var b=0;b<WM[wi].we[a].w.length;b++)t+=gc(wi,a,b);return t;}
 function gt(){var t=0;for(var i=0;i<WM.length;i++)t+=wt(i);return t;}
 function pt(){return Math.round(gt()/710*100);}
 function bc(n,mx){var p=n/mx;return p>=1?"bg":p>=.5?"ba":"br";}
 function kc(n){return n===10?"cd":n>0?"cp":"cn";}
+
+// MODAL
+var curModal={wi:0,wei:0,wai:0};
+function openModal(wi,wei,wai,waCode){
+  curModal={wi:wi,wei:wei,wai:wai};
+  document.getElementById("modal-title").textContent="Evidence folder: "+waCode;
+  document.getElementById("modal-input").value=gfolder(wi,wei,wai)||"";
+  document.getElementById("modal-bg").classList.add("show");
+  setTimeout(function(){document.getElementById("modal-input").focus();},100);
+}
+function closeModal(){document.getElementById("modal-bg").classList.remove("show");}
+function saveFolder(){
+  var url=document.getElementById("modal-input").value.trim();
+  if(url&&!url.startsWith("http")){toast("Please paste a valid link starting with http");return;}
+  sfolder(curModal.wi,curModal.wei,curModal.wai,url);
+  closeModal();
+  bCards();
+  toast(url?"Evidence folder linked!" :"Folder link removed");
+}
+document.getElementById("modal-bg").addEventListener("click",function(e){if(e.target===this)closeModal();});
+
 var toastT;
-function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},2200);}
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},2400);}
 function go(pg){
   document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});
   document.getElementById("pg-"+pg).classList.add("active");
@@ -294,18 +377,19 @@ function go(pg){
   if(pg==="profile")bProf();
 }
 function nav(btn){var n=btn.closest(".bnav");if(n)n.querySelectorAll(".nb").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");}
+
 function updOv(){
   var t=gt(),p=pt();
   document.getElementById("ov-pct").textContent=p+"%";
   document.getElementById("ov-fi").style.width=p+"%";
   document.getElementById("ov-cn").textContent=t+" / 710 completions";
-  var fb=Object.values(S.f).filter(Boolean).length;
   var chips="";
   if(t>0){if(p<50)chips='<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(226,75,74,.2);color:#F09595">At risk</span>';
   else if(p<80)chips='<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(239,159,39,.2);color:#FAC775">Monitor</span>';
   else chips='<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(29,158,117,.25);color:#9FE1CB">On track</span>';}
   document.getElementById("ov-chips").innerHTML=chips;
 }
+
 function bCards(){
   var el=document.getElementById("wm-list");el.innerHTML="";
   for(var wi=0;wi<WM.length;wi++){
@@ -316,13 +400,29 @@ function bCards(){
       for(var wei=0;wei<wm.we.length;wei++){
         var we=wm.we[wei],rows="";
         for(var wai=0;wai<we.w.length;wai++){
-          var n=gc(wi,wei,wai),dots="";
+          var n=gc(wi,wei,wai);
+          var folderUrl=gfolder(wi,wei,wai);
+          var dots="";
           for(var i=1;i<=10;i++)dots+='<div class="dot'+(i<=n?" done":"")+'" data-wi="'+wi+'" data-wei="'+wei+'" data-wai="'+wai+'" data-i="'+i+'"></div>';
-          rows+='<div class="war"><span class="wac">'+we.w[wai]+'</span><div class="dots">'+dots+'</div><span class="wak '+kc(n)+'" id="wk-'+wi+'-'+wei+'-'+wai+'">'+n+'/10</span></div>';
+          // Folder button
+          var folderBtn="";
+          if(folderUrl){
+            folderBtn='<a class="ev-btn linked" href="'+folderUrl+'" target="_blank" rel="noopener">'
+              +'<svg viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+              +'Open evidence folder</a>'
+              +'<button class="ev-add" data-wi="'+wi+'" data-wei="'+wei+'" data-wai="'+wai+'" data-code="'+we.w[wai]+'" onclick="openModal('+wi+','+wei+','+wai+',\''+we.w[wai]+'\')">Edit link</button>';
+          } else {
+            folderBtn='<button class="ev-add" data-wi="'+wi+'" data-wei="'+wei+'" data-wai="'+wai+'" onclick="openModal('+wi+','+wei+','+wai+',\''+we.w[wai]+'\')">'
+              +'+ Link evidence folder</button>';
+          }
+          rows+='<div class="war">'
+            +'<div class="war-top"><span class="wac">'+we.w[wai]+'</span><div class="dots">'+dots+'</div><span class="wak '+kc(n)+'" id="wk-'+wi+'-'+wei+'-'+wai+'">'+n+'/10</span></div>'
+            +'<div class="war-ev">'+folderBtn+'</div>'
+            +'</div>';
         }
         body+='<div class="wes"><div class="wet">'+we.c+' - '+we.t+'</div>'+rows+'</div>';
       }
-      d.innerHTML='<div class="wmh" id="wh-'+wi+'"><div class="wms" style="background:'+wm.color+'"></div><div class="wmi"><div class="wmn" style="color:'+wm.color+'">'+wm.id+': '+wm.name+'</div><div class="wmp">'+p+'% - '+tot+'/'+wm.max+'</div></div><span class="wmb '+bc(tot,wm.max)+'" id="wb-'+wi+'">'+tot+'/'+wm.max+'</span><span class="wch" id="wc-'+wi+'">v</span></div><div class="wbd" id="wbd-'+wi+'">'+body+'</div>';
+      d.innerHTML='<div class="wmh" id="wh-'+wi+'"><div class="wms" style="background:'+wm.color+'"></div><div class="wmi"><div class="wmn" style="color:'+wm.color+'">'+wm.id+': '+wm.name+'</div><div class="wmp">'+p+'% - '+tot+'/'+wm.max+'</div></div><span class="wmb '+bc(tot,wm.max)+'" id="wb-'+wi+'">'+tot+'/'+wm.max+'</span><span class="wch" id="wc-'+wi+'">&#8964;</span></div><div class="wbd" id="wbd-'+wi+'">'+body+'</div>';
       el.appendChild(d);
       document.getElementById("wh-"+wi).onclick=function(){document.getElementById("wbd-"+wi).classList.toggle("open");document.getElementById("wc-"+wi).classList.toggle("open");};
       d.querySelectorAll(".dot").forEach(function(dot){
@@ -337,12 +437,16 @@ function bCards(){
           var nt=wt(wi2);
           var wb=document.getElementById("wb-"+wi2);if(wb){wb.textContent=nt+"/"+WM[wi2].max;wb.className="wmb "+bc(nt,WM[wi2].max);}
           var wp=document.querySelector("#wh-"+wi2+" .wmp");if(wp)wp.textContent=Math.round(nt/WM[wi2].max*100)+"% - "+nt+"/"+WM[wi2].max;
-          updOv();toast(nw===10?"Complete!":"Saved: "+nw+"/10");
+          updOv();
+          var msg=nw===10?"Complete! Upload evidence to Drive":"Saved: "+nw+"/10";
+          if(nw===10&&!gfolder(wi2,wei2,wai2))msg="Complete! Don't forget to link your evidence folder";
+          toast(msg);
         };
       });
     })(wi);
   }
 }
+
 function bFB(){
   var el=document.getElementById("fb-list");el.innerHTML="";
   FB.forEach(function(fb){
@@ -350,14 +454,20 @@ function bFB(){
     el.innerHTML+='<div class="fbr"><div class="fbw">'+fb.wm+'<br><span class="fbws">'+fb.name+'</span></div><div class="fby">'+yrs+'</div></div>';
   });
 }
+
 function bProg(){
   var pb=document.getElementById("pbars");if(!pb)return;pb.innerHTML="";
   for(var i=0;i<WM.length;i++){var wm=WM[i],t=wt(i),p=Math.round(t/wm.max*100);pb.innerHTML+='<div class="prow"><span class="plbl" style="color:'+wm.color+'">'+wm.id+'</span><div class="ptr"><div class="pfi" style="background:'+wm.color+';width:'+p+'%"></div></div><span class="pcn" style="color:'+wm.color+'">'+t+'/'+wm.max+'</span></div>';}
-  var tot=gt(),dn=0,ip=0,tw=0;
-  for(var wi=0;wi<WM.length;wi++)for(var wei=0;wei<WM[wi].we.length;wei++)for(var wai=0;wai<WM[wi].we[wei].w.length;wai++){tw++;var n=gc(wi,wei,wai);if(n===10)dn++;else if(n>0)ip++;}
+  var tot=gt(),dn=0,ip=0,tw=0,fl=0;
+  for(var wi=0;wi<WM.length;wi++)for(var wei=0;wei<WM[wi].we.length;wei++)for(var wai=0;wai<WM[wi].we[wei].w.length;wai++){tw++;var n=gc(wi,wei,wai);if(n===10)dn++;else if(n>0)ip++;if(gfolder(wi,wei,wai))fl++;}
   var fb=Object.values(S.f).filter(Boolean).length;
-  document.getElementById("psum").innerHTML='<div class="prow"><span class="pk">Total completions</span><span class="pv">'+tot+'/710</span></div><div class="prow"><span class="pk">WAs complete</span><span class="pv" style="color:#085041">'+dn+'/'+tw+'</span></div><div class="prow"><span class="pk">WAs in progress</span><span class="pv" style="color:#633806">'+ip+'/'+tw+'</span></div><div class="prow"><span class="pk">Employer feedback</span><span class="pv">'+fb+'/12</span></div>';
+  document.getElementById("psum").innerHTML='<div class="prow"><span class="pk">Total completions</span><span class="pv">'+tot+'/710</span></div>'
+    +'<div class="prow"><span class="pk">WAs fully complete</span><span class="pv" style="color:#085041">'+dn+'/'+tw+'</span></div>'
+    +'<div class="prow"><span class="pk">WAs in progress</span><span class="pv" style="color:#633806">'+ip+'/'+tw+'</span></div>'
+    +'<div class="prow"><span class="pk">Evidence folders linked</span><span class="pv" style="color:#185FA5">'+fl+'/'+tw+'</span></div>'
+    +'<div class="prow"><span class="pk">Employer feedback</span><span class="pv">'+fb+'/12</span></div>';
 }
+
 function bProf(){
   var p=S.p;if(!p)return;
   document.getElementById("ps-stuno").textContent=p.sn;
@@ -370,6 +480,7 @@ function bProf(){
   document.getElementById("p-tot").textContent=gt()+"/710";
   document.getElementById("p-pct").textContent=pt()+"%";
 }
+
 function loadHome(){
   var p=S.p;if(!p)return;
   var init=p.n.split(" ").map(function(w){return w[0]||"";}).join("").slice(0,2).toUpperCase();
@@ -379,6 +490,7 @@ function loadHome(){
   document.getElementById("t-av").textContent=init;
   bCards();bFB();updOv();go("home");
 }
+
 function copyProg(){
   var p=S.p;if(!p){toast("No profile yet");return;}
   var lines=["BluLever Logbook Progress","Name: "+p.n,"Student: "+p.sn,"Trade: "+p.tr,"Cohort: "+p.co+" | "+p.yr+" | "+p.eb,"","Total: "+gt()+"/710 ("+pt()+"%)"];
@@ -388,13 +500,16 @@ function copyProg(){
   if(navigator.clipboard)navigator.clipboard.writeText(txt).then(function(){toast("Copied! Paste into WhatsApp.");}).catch(function(){prompt("Copy this:",txt);});
   else prompt("Copy this:",txt);
 }
+
 function exportD(){
   var blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
   var url=URL.createObjectURL(blob);
   var a=document.createElement("a");a.href=url;a.download="BLE_Logbook_"+(S.p?S.p.sn:"backup")+".json";a.click();URL.revokeObjectURL(url);
   toast("Exported successfully");
 }
-function resetD(){if(confirm("Delete all your progress permanently?")){localStorage.removeItem(SK);S={p:null,c:{},f:{}};go("setup");toast("Data cleared");}}
+
+function resetD(){if(confirm("Delete all your progress permanently?")){localStorage.removeItem(SK);S={p:null,c:{},f:{},folders:{}};go("setup");toast("Data cleared");}}
+
 ld();
 document.getElementById("btn-start").addEventListener("click",function(){
   var n=document.getElementById("f-name").value.trim();
