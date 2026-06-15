@@ -104,7 +104,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
 .fbw{flex:1;font-size:12px;font-weight:600;color:#1A3C5E}
 .fbws{font-size:10px;color:#5F5E5A;font-weight:400}
 .fby{display:flex;gap:4px}
-.yr{width:28px;height:28px;border-radius:50%;border:1.5px solid #E2EBF0;background:#fff;font-size:10px;font-weight:700;color:#B4B2A9;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.yr{width:28px;height:28px;border-radius:50%;border:1.5px solid #E2EBF0;background:#fff;font-size:10px;font-weight:700;color:#B4B2A9;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .12s;user-select:none}
 .yr.done{background:#1D9E75;border-color:#0F6E56;color:#fff}
 
 /* BOTTOM NAV */
@@ -226,7 +226,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;ba
     <div class="fbc">
       <div class="fbh">
         <div class="fbi">&#128172;</div>
-        <div><div class="fbt">Employer feedback</div><div class="fbs">Ticked by your TF or CRM — 1 per module per year</div></div>
+        <div><div class="fbt">Employer feedback</div><div class="fbs">Tap Y1, Y2 or Y3 to mark feedback received for that year</div></div>
       </div>
       <div id="fb-list"></div>
     </div>
@@ -450,9 +450,20 @@ function bCards(){
 function bFB(){
   var el=document.getElementById("fb-list");el.innerHTML="";
   FB.forEach(function(fb){
-    var yrs="";for(var yr=1;yr<=3;yr++)yrs+='<div class="yr'+(gf(fb.wm,yr)?" done":"")+'">Y'+yr+'</div>';
+    var yrs="";
+    for(var yr=1;yr<=3;yr++){
+      yrs+='<div class="yr'+(gf(fb.wm,yr)?" done":"")+'" data-wm="'+fb.wm+'" data-yr="'+yr+'" onclick="toggleFB(this)">Y'+yr+'</div>';
+    }
     el.innerHTML+='<div class="fbr"><div class="fbw">'+fb.wm+'<br><span class="fbws">'+fb.name+'</span></div><div class="fby">'+yrs+'</div></div>';
   });
+}
+function toggleFB(el){
+  var wm=el.dataset.wm,yr=parseInt(el.dataset.yr);
+  var cur=gf(wm,yr);
+  S.f[wm+"_"+yr]=!cur;sv();
+  el.classList.toggle("done",!cur);
+  toast(!cur?"Feedback marked as received":"Feedback mark removed");
+  updOv();
 }
 
 function bProg(){
