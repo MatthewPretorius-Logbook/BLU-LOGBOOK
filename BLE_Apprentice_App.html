@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BluLever Logbook Tracker</title>
+<style>
+:root{
+  --navy:#1A3C5E;--teal:#0F6E56;--gold:#F5B800;--white:#fff;
+  --g0:#F4F6F8;--g1:#E2EBF0;--g2:#B4B2A9;--g3:#5F5E5A;
+  --green:#1D9E75;--lgreen:#E1F5EE;--dgreen:#085041;
+  --amber:#EF9F27;--lamber:#FAEEDA;--damber:#633806;
+  --red:#E24B4A;--lred:#FCEBEB;--dred:#791F1F;
+  --blue:#378ADD;--lblue:#E6F1FB;--dblue:#185FA5;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#1A3C5E;min-height:100vh;display:flex;justify-content:center}
+.app{width:100%;max-width:430px;background:var(--white);min-height:100vh;display:flex;flex-direction:column;position:relative}
+.page{display:none;flex-direction:column;flex:1}.page.active{display:flex}
+
+/* LOADING */
+#pg-loading{justify-content:center;align-items:center;background:var(--navy)}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:rgba(255,255,255,.7);font-size:14px}
+
+/* SETUP */
+#pg-setup{overflow-y:auto}
+.setup-wrap{padding:28px 18px 40px;background:var(--navy);min-height:100vh}
+.logo-svg{display:block;margin:0 auto 24px}
+.card{background:var(--white);border-radius:16px;padding:20px 18px;margin-bottom:12px}
+.card h2{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.card p{font-size:13px;color:var(--g3);margin-bottom:16px;line-height:1.5}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--g2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+.field input,.field select{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid var(--g1);font-size:15px;color:var(--navy);background:var(--g0);outline:none;font-family:inherit;-webkit-appearance:none;appearance:none}
+.field input:focus,.field select:focus{border-color:var(--teal);background:var(--white)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.err{color:var(--red);font-size:12px;margin-top:6px;display:none}
+.btn-primary{display:block;width:100%;padding:14px;background:var(--teal);color:var(--white);font-size:16px;font-weight:700;border:none;border-radius:10px;cursor:pointer;margin-top:4px;text-align:center}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.setup-note{font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-top:14px;line-height:1.7}
+
+/* TOPBAR */
+.topbar{background:var(--navy);padding:10px 14px;flex-shrink:0}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between}
+.t-right{display:flex;align-items:center;gap:8px}
+.t-name{font-size:13px;font-weight:700;color:var(--white)}
+.t-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
+.t-pill{background:rgba(245,184,0,.2);color:var(--gold);font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:inline-block;margin-top:2px}
+.t-av{width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--navy);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+
+/* BODY */
+.body{flex:1;overflow-y:auto;padding-bottom:70px}
+
+/* OVERVIEW */
+.ov{margin:12px;background:var(--navy);border-radius:14px;padding:14px}
+.ov-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ov-pct{font-size:30px;font-weight:800;color:var(--white);letter-spacing:-1px;min-width:62px}
+.ov-ri{flex:1}
+.ov-lbl{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.ov-tr{height:7px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden}
+.ov-fi{height:100%;background:var(--gold);border-radius:4px;transition:width .4s}
+.ov-cn{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px}
+.ov-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.chip-g{background:rgba(29,158,117,.25);color:#9FE1CB}
+.chip-a{background:rgba(239,159,39,.2);color:#FAC775}
+.chip-r{background:rgba(226,75,74,.2);color:#F09595}
+.chip-b{background:rgba(55,138,221,.2);color:#85B7EB}
+
+/* SECTION LABEL */
+.sl{font-size:10px;font-weight:700;color:var(--g2);letter-spacing:.08em;text-transform:uppercase;padding:10px 14px 4px}
+
+/* WM CARDS */
+.wmc{margin:0 10px 8px;border-radius:12px;border:1px solid var(--g1);overflow:hidden;background:var(--white)}
+.wmh{display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer;user-select:none}
+.wms{width:4px;height:32px;border-radius:2px;flex-shrink:0}
+.wmi{flex:1;min-width:0}
+.wmn{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wmp{font-size:11px;color:var(--g3);margin-top:1px}
+.wmb{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;white-space:nowrap}
+.bg{background:var(--lgreen);color:var(--dgreen)}.ba{background:var(--lamber);color:var(--damber)}.br{background:var(--lred);color:var(--dred)}.bb{background:var(--lblue);color:var(--dblue)}
+.wch{font-size:13px;color:var(--g2);transition:transform .2s;flex-shrink:0}
+.wch.open{transform:rotate(180deg)}
+.wbd{display:none;border-top:1px solid var(--g1)}.wbd.open{display:block}
+.wes{padding:8px 12px;border-bottom:1px solid var(--g1)}.wes:last-child{border-bottom:none}
+.wet{font-size:10px;font-weight:700;color:var(--g2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+
+/* WA ROW */
+.war{margin-bottom:10px;background:var(--g0);border-radius:8px;padding:10px 10px 8px;border:1px solid var(--g1)}
+.war:last-child{margin-bottom:0}
+.war-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.wa-code{font-size:11px;font-weight:700;color:var(--g2);font-family:monospace;min-width:52px;padding-top:1px}
+.wa-desc{font-size:12px;color:var(--navy);line-height:1.4;flex:1}
+.wa-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.ws-none{background:var(--g1);color:var(--g2)}
+.ws-submitted{background:var(--lblue);color:var(--dblue)}
+.ws-waiting{background:var(--lamber);color:var(--damber)}
+.ws-accepted{background:var(--lgreen);color:var(--dgreen)}
+.ws-resub{background:var(--lred);color:var(--dred)}
+
+/* Completions */
+.wa-comps{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.comp-dot{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--g1);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--g2);transition:all .15s;flex-shrink:0}
+.comp-dot.submitted{background:var(--lamber);border-color:var(--amber);color:var(--damber)}
+.comp-dot.accepted{background:var(--green);border-color:var(--dgreen);color:var(--white)}
+.comp-dot.resub{background:var(--lred);border-color:var(--red);color:var(--dred)}
+.comp-dot.active{border-color:var(--navy);color:var(--navy)}
+
+/* Submit row */
+.wa-actions{display:flex;gap:6px;align-items:center}
+.btn-submit{flex:1;padding:7px 10px;border-radius:7px;border:none;background:var(--navy);color:var(--white);font-size:12px;font-weight:700;cursor:pointer}
+.btn-submit:disabled{opacity:.4;cursor:not-allowed}
+.btn-folder{width:32px;height:32px;border-radius:7px;border:1.5px solid var(--g1);background:var(--g0);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;text-decoration:none;font-size:15px}
+.btn-folder.linked{background:var(--lblue);border-color:#85B7EB}
+
+/* Comment box */
+.wa-comment{margin-top:6px;padding:8px 10px;border-radius:7px;background:var(--lred);border-left:3px solid var(--red);font-size:12px;color:var(--dred);line-height:1.5}
+.wa-comment-good{background:var(--lgreen);border-left-color:var(--green);color:var(--dgreen)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:430px}
+.modal h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.modal p{font-size:13px;color:var(--g3);margin-bottom:14px;line-height:1.5}
+.modal input{width:100%;padding:11px 12px;border-radius:8px;border:1.5px solid var(--g1);font-size:14px;color:var(--navy);background:var(--g0);outline:none;font-family:inherit;margin-bottom:10px}
+.modal input:focus{border-color:var(--teal);background:var(--white)}
+.modal-btns{display:flex;gap:8px}
+.modal-btns button{flex:1;padding:12px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none}
+.btn-save{background:var(--teal);color:var(--white)}
+.btn-cancel{background:var(--g0);color:var(--g3)}
+.modal-hint{font-size:11px;color:var(--g2);margin-top:10px;line-height:1.6;text-align:center}
+
+/* PROFILE PAGE */
+.psec{padding:12px 14px;border-bottom:1px solid var(--g1)}
+.plb{font-size:10px;font-weight:700;color:var(--g2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--g0)}
+.pr:last-child{border-bottom:none}
+.pk{font-size:13px;color:var(--g3)}.pv{font-size:13px;font-weight:600;color:var(--navy)}
+.infon{font-size:12px;color:var(--g3);line-height:1.6;padding:10px 13px;background:var(--g0);margin:10px;border-radius:8px}
+.btn-secondary{display:block;width:calc(100% - 24px);margin:0 12px 10px;padding:11px;border-radius:8px;border:1.5px solid var(--g1);background:var(--white);color:var(--navy);font-size:13px;font-weight:600;cursor:pointer;text-align:center}
+.btn-danger{display:block;width:calc(100% - 24px);margin:0 12px 12px;padding:11px;border-radius:8px;border:1.5px solid var(--lred);background:none;color:var(--dred);font-size:13px;font-weight:600;cursor:pointer;text-align:center}
+
+/* BOTTOM NAV */
+.bnav{position:absolute;bottom:0;left:0;right:0;display:flex;background:var(--white);border-top:1px solid var(--g1);z-index:10}
+.nb{flex:1;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:none;background:none;font-size:10px;font-weight:600;color:var(--g2)}
+.nb.active{color:var(--navy)}.nb svg{width:20px;height:20px}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);font-size:13px;font-weight:600;padding:10px 18px;border-radius:100px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+
+/* SYNC INDICATOR */
+.sync{position:fixed;top:8px;right:8px;font-size:11px;padding:4px 10px;border-radius:20px;z-index:100;transition:all .3s}
+.sync-ok{background:var(--lgreen);color:var(--dgreen)}
+.sync-err{background:var(--lred);color:var(--dred)}
+.sync-busy{background:var(--lamber);color:var(--damber)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- LOADING -->
+<div id="pg-loading" class="page active">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading your logbook...</div>
+</div>
+
+<!-- SETUP -->
+<div id="pg-setup" class="page">
+<div class="setup-wrap">
+  <svg class="logo-svg" width="180" height="48" viewBox="0 0 200 52" fill="none">
+    <circle cx="18" cy="13" r="6" fill="white"/><circle cx="38" cy="13" r="6" fill="white"/><circle cx="28" cy="31" r="6" fill="white"/>
+    <circle cx="10" cy="31" r="4" fill="white" opacity=".5"/><circle cx="46" cy="31" r="4" fill="white" opacity=".5"/>
+    <line x1="18" y1="13" x2="38" y2="13" stroke="white" stroke-width="2" opacity=".4"/>
+    <line x1="18" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+    <line x1="38" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+    <text x="62" y="20" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="white" letter-spacing="1">BLULEVER</text>
+    <text x="62" y="38" font-family="Arial,sans-serif" font-size="12" fill="rgba(255,255,255,0.6)" letter-spacing="1">EDUCATION</text>
+  </svg>
+  <div class="card">
+    <h2>Welcome to your logbook</h2>
+    <p>Enter your details to set up your profile. Your data saves to BluLever's tracker automatically.</p>
+    <div class="field"><label>Apprentice ID *</label><input id="f-id" type="text" placeholder="e.g. BLE2023001"></div>
+    <div class="field"><label>Full name *</label><input id="f-name" type="text" placeholder="e.g. Thabo Nkosi"></div>
+    <div class="field-row">
+      <div class="field"><label>Phone *</label><input id="f-phone" type="tel" placeholder="0821234567"></div>
+      <div class="field"><label>Email</label><input id="f-email" type="email" placeholder="name@email.com"></div>
+    </div>
+    <div class="field"><label>Trade *</label>
+      <select id="f-trade">
+        <option value="">Select trade...</option>
+        <option value="Plumbing">Plumbing</option>
+        <option value="Electrical">Electrical</option>
+        <option value="Automotive">Automotive</option>
+        <option value="Solar">Solar</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Cohort *</label><input id="f-cohort" type="text" placeholder="e.g. 2024-A"></div>
+      <div class="field"><label>Year *</label>
+        <select id="f-year"><option>Year 1</option><option>Year 2</option><option>Year 3</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Current stage *</label>
+      <select id="f-stage">
+        <option value="Block 1">Block 1</option><option value="EBL 1">EBL 1</option>
+        <option value="Block 2">Block 2</option><option value="EBL 2">EBL 2</option>
+        <option value="Block 3">Block 3</option><option value="EBL 3">EBL 3</option>
+      </select>
+    </div>
+    <div class="field"><label>Employer *</label><input id="f-employer" type="text" placeholder="Company name"></div>
+    <div class="field"><label>Site location *</label><input id="f-site" type="text" placeholder="City / area"></div>
+    <div class="field"><label>Start date</label><input id="f-start" type="date"></div>
+    <div class="err" id="setup-err">Please fill in all required fields.</div>
+    <button class="btn-primary" id="btn-setup">Create my logbook profile</button>
+  </div>
+  <div class="setup-note">Your profile saves automatically to BluLever's tracker.<br>BluLever team members can view your progress at any time.</div>
+</div>
+</div>
+
+<!-- HOME -->
+<div id="pg-home" class="page">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <svg width="120" height="30" viewBox="0 0 200 52" fill="none">
+        <circle cx="18" cy="13" r="6" fill="white"/><circle cx="38" cy="13" r="6" fill="white"/><circle cx="28" cy="31" r="6" fill="white"/>
+        <line x1="18" y1="13" x2="38" y2="13" stroke="white" stroke-width="2" opacity=".4"/>
+        <line x1="18" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+        <line x1="38" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+        <text x="62" y="20" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="white" letter-spacing="1">BLULEVER</text>
+        <text x="62" y="38" font-family="Arial,sans-serif" font-size="12" fill="rgba(255,255,255,0.6)" letter-spacing="1">EDUCATION</text>
+      </svg>
+      <div class="t-right">
+        <div style="text-align:right">
+          <div class="t-name" id="t-name"></div>
+          <div class="t-sub" id="t-sub"></div>
+          <span class="t-pill" id="t-pill"></span>
+        </div>
+        <div class="t-av" id="t-av" onclick="go('profile')"></div>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="ov">
+      <div class="ov-row">
+        <div class="ov-pct" id="ov-pct">0%</div>
+        <div class="ov-ri">
+          <div class="ov-lbl">Audited & accepted</div>
+          <div class="ov-tr"><div class="ov-fi" id="ov-fi" style="width:0%"></div></div>
+          <div class="ov-cn" id="ov-cn">0 submissions audited</div>
+        </div>
+      </div>
+      <div class="ov-chips" id="ov-chips"></div>
+    </div>
+    <div class="sl">Work modules</div>
+    <div id="wm-list"></div>
+    <div style="height:12px"></div>
+  </div>
+  <div class="bnav">
+    <button class="nb active" onclick="go('home');nav(this)">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Home
+    </button>
+    <button class="nb" onclick="go('profile');nav(this)">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>Profile
+    </button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="pg-profile" class="page">
+  <div class="topbar"><div class="topbar-inner">
+    <div><div class="t-name" style="color:#fff">My profile</div><div class="t-sub" id="p-id-sub"></div></div>
+  </div></div>
+  <div class="body">
+    <div class="psec">
+      <div class="plb">Personal details</div>
+      <div class="pr"><span class="pk">ID</span><span class="pv" id="p-id"></span></div>
+      <div class="pr"><span class="pk">Name</span><span class="pv" id="p-name"></span></div>
+      <div class="pr"><span class="pk">Phone</span><span class="pv" id="p-phone"></span></div>
+      <div class="pr"><span class="pk">Email</span><span class="pv" id="p-email" style="font-size:12px"></span></div>
+    </div>
+    <div class="psec">
+      <div class="plb">Programme details</div>
+      <div class="pr"><span class="pk">Trade</span><span class="pv" id="p-trade" style="color:var(--teal)"></span></div>
+      <div class="pr"><span class="pk">Cohort</span><span class="pv" id="p-cohort"></span></div>
+      <div class="pr"><span class="pk">Year</span><span class="pv" id="p-year"></span></div>
+      <div class="pr"><span class="pk">Stage</span><span class="pv" id="p-stage"></span></div>
+      <div class="pr"><span class="pk">Employer</span><span class="pv" id="p-employer"></span></div>
+      <div class="pr"><span class="pk">Site</span><span class="pv" id="p-site"></span></div>
+    </div>
+    <div class="psec">
+      <div class="plb">Evidence Drive folder</div>
+      <div class="pr">
+        <span class="pk">Root folder link</span>
+        <span id="p-drive-display" style="font-size:12px;color:var(--blue)">Not set</span>
+      </div>
+      <button class="btn-secondary" style="margin-top:8px" onclick="openDriveModal()">Set / update Drive folder link</button>
+    </div>
+    <div class="infon">Your progress is visible to your TF, CRM, and BluLever team at all times. Submit evidence for each WA on the Home screen.</div>
+    <button class="btn-secondary" onclick="editProfile()">Edit my profile</button>
+    <button class="btn-danger" onclick="signOut()">Sign out</button>
+  </div>
+  <div class="bnav">
+    <button class="nb" onclick="go('home');nav(this)">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Home
+    </button>
+    <button class="nb active" onclick="go('profile');nav(this)">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>Profile
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: Submit evidence -->
+<div class="modal-bg" id="modal-submit-bg">
+  <div class="modal">
+    <h3 id="modal-submit-title">Submit evidence</h3>
+    <p>Paste the Google Drive folder link for this completion. The link must point to a folder containing your signed SOWE template and supporting evidence.</p>
+    <input id="modal-submit-url" type="url" placeholder="Paste Google Drive folder link here...">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('submit')">Cancel</button>
+      <button class="btn-save" id="btn-modal-submit" onclick="confirmSubmit()">Submit evidence</button>
+    </div>
+    <div class="modal-hint">How to get the link: Open Google Drive → long-press the folder → Share → Copy link → paste above.</div>
+  </div>
+</div>
+
+<!-- MODAL: Drive root folder -->
+<div class="modal-bg" id="modal-drive-bg">
+  <div class="modal">
+    <h3>Set your evidence Drive folder</h3>
+    <p>Paste the link to your main BluLever Logbook folder in Google Drive. Share this folder with your TF first.</p>
+    <input id="modal-drive-url" type="url" placeholder="Paste root Drive folder link...">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('drive')">Cancel</button>
+      <button class="btn-save" onclick="saveDriveUrl()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="sync" id="sync" style="display:none"></div>
+</div>
+
+<script>
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0fycVJsPXZubiwz8BC5I6dCww7OgbHk64iOboGWq4gyinIdCCuoskCbNGnYwuDsPhRQ/exec";
+var SK = "ble_appie_v1";
+var S = {profile:null, was:[], submissions:[]};
+var curModal = {waId:"", waCode:"", compNum:1, waDesc:""};
+
+// ── STORAGE ───────────────────────────────────────────────────
+function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function load(){try{var d=localStorage.getItem(SK);if(d)S=JSON.parse(d);}catch(e){}}
+
+// ── API CALLS ─────────────────────────────────────────────────
+function api(params, method, body){
+  if(method === "GET"){
+    var url = SCRIPT_URL + "?" + Object.keys(params).map(function(k){return k+"="+encodeURIComponent(params[k]);}).join("&");
+    return fetch(url).then(function(r){return r.json();});
+  } else {
+    body.action = params.action;
+    return fetch(SCRIPT_URL, {
+      method:"POST",
+      body: JSON.stringify(body),
+      headers:{"Content-Type":"application/json"}
+    }).then(function(r){return r.json();});
+  }
+}
+
+function showSync(state, msg){
+  var el = document.getElementById("sync");
+  el.style.display = "block";
+  el.className = "sync sync-"+state;
+  el.textContent = msg;
+  if(state === "ok") setTimeout(function(){el.style.display="none";}, 2000);
+}
+
+// ── BOOT ──────────────────────────────────────────────────────
+load();
+document.addEventListener("DOMContentLoaded", function(){
+  if(S.profile && S.profile.id){
+    // Returning user — reload from Sheet
+    showSync("busy", "Syncing...");
+    api({action:"getProfile", id:S.profile.id}, "GET")
+      .then(function(res){
+        if(res.found){
+          S.profile = res;
+          save();
+        }
+        loadWAsAndSubmissions();
+      })
+      .catch(function(){
+        // Offline — use cached data
+        loadWAsAndSubmissions();
+      });
+  } else {
+    go("setup");
+  }
+});
+
+function loadWAsAndSubmissions(){
+  var trade = S.profile ? S.profile.trade : "Plumbing";
+  Promise.all([
+    api({action:"getWAs", trade:trade}, "GET"),
+    api({action:"getSubmissions", id:S.profile.id}, "GET")
+  ]).then(function(results){
+    if(results[0].was) S.was = results[0].was;
+    if(results[1].submissions) S.submissions = results[1].submissions;
+    save();
+    showSync("ok", "Up to date");
+    loadHome();
+  }).catch(function(){
+    showSync("err", "Offline — using cached data");
+    if(S.was && S.was.length > 0) loadHome();
+    else go("setup");
+  });
+}
+
+// ── SETUP ─────────────────────────────────────────────────────
+document.getElementById("btn-setup").addEventListener("click", function(){
+  var id       = document.getElementById("f-id").value.trim();
+  var name     = document.getElementById("f-name").value.trim();
+  var phone    = document.getElementById("f-phone").value.trim();
+  var email    = document.getElementById("f-email").value.trim();
+  var trade    = document.getElementById("f-trade").value;
+  var cohort   = document.getElementById("f-cohort").value.trim();
+  var year     = document.getElementById("f-year").value;
+  var stage    = document.getElementById("f-stage").value;
+  var employer = document.getElementById("f-employer").value.trim();
+  var site     = document.getElementById("f-site").value.trim();
+  var startDate= document.getElementById("f-start").value;
+  var err      = document.getElementById("setup-err");
+
+  if(!id||!name||!phone||!trade||!cohort||!employer||!site){
+    err.style.display="block"; return;
+  }
+  err.style.display="none";
+  document.getElementById("btn-setup").disabled = true;
+  document.getElementById("btn-setup").textContent = "Saving...";
+  showSync("busy","Saving profile...");
+
+  var profile = {id:id,name:name,phone:phone,email:email,trade:trade,
+    cohort:cohort,year:year,stage:stage,employer:employer,site:site,startDate:startDate};
+
+  api({action:"createProfile"}, "POST", profile)
+    .then(function(res){
+      if(res.success || res.created !== undefined){
+        S.profile = profile;
+        save();
+        showSync("ok","Profile saved");
+        toast("Profile created successfully!");
+        loadWAsAndSubmissions();
+      } else {
+        showSync("err","Error saving");
+        document.getElementById("btn-setup").disabled = false;
+        document.getElementById("btn-setup").textContent = "Create my logbook profile";
+        alert("Error: " + (res.error || "Please try again"));
+      }
+    })
+    .catch(function(e){
+      showSync("err","Network error");
+      document.getElementById("btn-setup").disabled = false;
+      document.getElementById("btn-setup").textContent = "Create my logbook profile";
+      alert("Network error. Please check your internet and try again.");
+    });
+});
+
+// ── HOME ──────────────────────────────────────────────────────
+function loadHome(){
+  var p = S.profile;
+  if(!p){go("setup");return;}
+  var init = p.name.split(" ").map(function(w){return w[0]||"";}).join("").slice(0,2).toUpperCase();
+  document.getElementById("t-name").textContent = p.name;
+  document.getElementById("t-sub").textContent  = (p.id||"") + " · " + (p.year||"") + " · " + (p.stage||"");
+  document.getElementById("t-pill").textContent = (p.trade||"").toUpperCase();
+  document.getElementById("t-av").textContent   = init;
+  buildWMCards();
+  updateOv();
+  go("home");
+}
+
+function updateOv(){
+  var total = S.was.length;
+  var accepted = S.submissions.filter(function(s){return s.audStatus==="Accepted";}).length;
+  var waiting  = S.submissions.filter(function(s){return s.audStatus==="Awaiting audit";}).length;
+  var resub    = S.submissions.filter(function(s){return s.audStatus==="Resubmission required";}).length;
+  var pct = total > 0 ? Math.round(accepted/total*100) : 0;
+  document.getElementById("ov-pct").textContent = pct+"%";
+  document.getElementById("ov-fi").style.width  = pct+"%";
+  document.getElementById("ov-cn").textContent  = accepted+" of "+total+" WAs accepted";
+  var chips = "";
+  if(accepted>0)chips+='<span class="chip chip-g">'+accepted+' accepted</span>';
+  if(waiting>0) chips+='<span class="chip chip-a">'+waiting+' awaiting audit</span>';
+  if(resub>0)   chips+='<span class="chip chip-r">'+resub+' resubmit required</span>';
+  document.getElementById("ov-chips").innerHTML = chips;
+}
+
+// ── WM CARDS ─────────────────────────────────────────────────
+var WM_COLORS = {
+  "WM-01":["#1A3C5E","#E6F1FB"],
+  "WM-02":["#0F6E56","#E1F5EE"],
+  "WM-03":["#854F0B","#FAEEDA"],
+  "WM-04":["#993556","#FBEAF0"],
+};
+var WM_NAMES = {
+  "WM-01":"WM-01: Above Ground & Sanitary Ware",
+  "WM-02":"WM-02: Below-Ground Drainage",
+  "WM-03":"WM-03: Hot & Cold Water Systems",
+  "WM-04":"WM-04: Rainwater Systems",
+};
+
+function getSubsForWA(waId){
+  return S.submissions.filter(function(s){return String(s.waId)===String(waId);});
+}
+
+function waStatus(waId, required){
+  var subs = getSubsForWA(waId);
+  if(subs.length === 0) return "none";
+  var accepted = subs.filter(function(s){return s.audStatus==="Accepted";});
+  if(accepted.length >= required) return "accepted";
+  var resub = subs.filter(function(s){return s.audStatus==="Resubmission required";});
+  if(resub.length > 0) return "resub";
+  var waiting = subs.filter(function(s){return s.audStatus==="Awaiting audit";});
+  if(waiting.length > 0) return "waiting";
+  return "submitted";
+}
+
+function waStatusLabel(status){
+  if(status==="none")     return ["Not submitted","ws-none"];
+  if(status==="submitted")return ["Submitted","ws-submitted"];
+  if(status==="waiting")  return ["Awaiting audit","ws-waiting"];
+  if(status==="accepted") return ["Accepted ✓","ws-accepted"];
+  if(status==="resub")    return ["Resubmit required","ws-resub"];
+  return ["","ws-none"];
+}
+
+function buildWMCards(){
+  var el = document.getElementById("wm-list");
+  el.innerHTML = "";
+  // Group WAs by module
+  var modules = {};
+  S.was.forEach(function(wa){
+    var m = wa.module || "Other";
+    if(!modules[m]) modules[m] = [];
+    modules[m].push(wa);
+  });
+  Object.keys(modules).sort().forEach(function(mod){
+    var was = modules[mod];
+    var modKey = mod.substring(0,5).trim();
+    var colors = WM_COLORS[modKey] || [NAVY,"#F4F6F8"];
+    var modName= WM_NAMES[modKey] || mod;
+    var accepted = was.filter(function(wa){return waStatus(wa.waId,"accepted")==="accepted";}).length;
+    var bc = accepted===was.length?"bg":accepted>0?"ba":"br";
+    var div = document.createElement("div"); div.className="wmc";
+    var bodyHTML = was.map(function(wa){
+      var subs    = getSubsForWA(wa.waId);
+      var req     = parseInt(wa.required)||10;
+      var status  = waStatus(wa.waId, req);
+      var sl      = waStatusLabel(status);
+      var comment = "";
+      var latestComment = "";
+      subs.forEach(function(s){if(s.comment)latestComment=s.comment;});
+      // Build completion dots
+      var dots = "";
+      for(var i=1;i<=req;i++){
+        var sub = subs.find(function(s){return parseInt(s.compNum)===i;});
+        var cls = "comp-dot";
+        if(sub){
+          if(sub.audStatus==="Accepted") cls+=" accepted";
+          else if(sub.audStatus==="Resubmission required") cls+=" resub";
+          else cls+=" submitted";
+        }
+        dots += '<div class="'+cls+'" onclick="dotClick(\''+wa.waId+'\',\''+wa.code+'\','+i+',\''+wa.waId+'\','+req+')" title="Completion '+i+'/'+req+'">'+i+'</div>';
+      }
+      // Comment box
+      if(latestComment){
+        var commentClass = status==="accepted"?"wa-comment wa-comment-good":"wa-comment";
+        comment = '<div class="'+commentClass+'"><strong>BluLever feedback:</strong> '+latestComment+'</div>';
+      }
+      // Folder link
+      var driveUrl = subs.length>0 && subs[subs.length-1].driveUrl ? subs[subs.length-1].driveUrl : "";
+      var folderBtn = driveUrl
+        ? '<a class="btn-folder linked" href="'+driveUrl+'" target="_blank" title="Open evidence folder">📁</a>'
+        : '<div class="btn-folder" title="No folder linked yet">📂</div>';
+
+      return '<div class="war">'
+        +'<div class="war-top">'
+        +'<span class="wa-code">'+wa.code+'</span>'
+        +'<span class="wa-desc">'+wa.desc+'</span>'
+        +'<span class="wa-status '+sl[1]+'">'+sl[0]+'</span>'
+        +'</div>'
+        +'<div class="wa-comps">'+dots+'</div>'
+        +'<div class="wa-actions">'
+        +'<button class="btn-submit" onclick="openSubmitModal(\''+wa.waId+'\',\''+wa.code+'\','+(subs.length+1)+','+req+')" '+(subs.length>=req?"disabled":"")+'>'
+        +(subs.length>=req?"All "+req+" submitted":"Submit completion "+ (subs.length+1)+" of "+req)
+        +'</button>'
+        +folderBtn
+        +'</div>'
+        +comment
+        +'</div>';
+    }).join("");
+
+    div.innerHTML = '<div class="wmh" id="wmh-'+modKey+'">'
+      +'<div class="wms" style="background:'+colors[0]+'"></div>'
+      +'<div class="wmi"><div class="wmn" style="color:'+colors[0]+'">'+modName+'</div>'
+      +'<div class="wmp">'+accepted+' / '+was.length+' WAs accepted</div></div>'
+      +'<span class="wmb '+bc+'" id="wmbg-'+modKey+'">'+accepted+'/'+was.length+'</span>'
+      +'<span class="wch" id="wch-'+modKey+'">&#8964;</span>'
+      +'</div>'
+      +'<div class="wbd" id="wbd-'+modKey+'"><div class="wes">'+bodyHTML+'</div></div>';
+    el.appendChild(div);
+    document.getElementById("wmh-"+modKey).onclick = function(){
+      document.getElementById("wbd-"+modKey).classList.toggle("open");
+      document.getElementById("wch-"+modKey).classList.toggle("open");
+    };
+  });
+}
+
+// ── DOT CLICK ─────────────────────────────────────────────────
+function dotClick(waId, waCode, compNum, waId2, req){
+  var subs = getSubsForWA(waId);
+  var sub  = subs.find(function(s){return parseInt(s.compNum)===compNum;});
+  if(sub){
+    // Already submitted — show status
+    var msg = "Completion "+compNum+": "+sub.audStatus;
+    if(sub.comment) msg += "\nBL feedback: "+sub.comment;
+    alert(msg);
+  } else {
+    // Open submit modal for this completion
+    openSubmitModal(waId, waCode, compNum, req);
+  }
+}
+
+// ── SUBMIT MODAL ──────────────────────────────────────────────
+function openSubmitModal(waId, waCode, compNum, req){
+  curModal = {waId:waId, waCode:waCode, compNum:compNum, req:req};
+  document.getElementById("modal-submit-title").textContent = waCode + " — Completion " + compNum + " of " + req;
+  document.getElementById("modal-submit-url").value = "";
+  document.getElementById("modal-submit-bg").classList.add("show");
+  setTimeout(function(){document.getElementById("modal-submit-url").focus();},100);
+}
+
+function confirmSubmit(){
+  var url = document.getElementById("modal-submit-url").value.trim();
+  if(!url || !url.startsWith("http")){
+    alert("Please paste a valid Google Drive folder link starting with http");
+    return;
+  }
+  var btn = document.getElementById("btn-modal-submit");
+  btn.disabled = true; btn.textContent = "Submitting...";
+  showSync("busy","Submitting evidence...");
+
+  var data = {
+    appId:    S.profile.id,
+    appName:  S.profile.name,
+    waId:     curModal.waId,
+    waCode:   curModal.waCode,
+    compNum:  curModal.compNum,
+    driveUrl: url,
+  };
+
+  api({action:"submitEvidence"}, "POST", data)
+    .then(function(res){
+      btn.disabled = false; btn.textContent = "Submit evidence";
+      if(res.success){
+        closeModal("submit");
+        showSync("ok","Evidence submitted");
+        toast("Evidence submitted for " + curModal.waCode + " completion " + curModal.compNum);
+        // Refresh submissions
+        api({action:"getSubmissions", id:S.profile.id}, "GET")
+          .then(function(r){
+            if(r.submissions) S.submissions = r.submissions;
+            save(); buildWMCards(); updateOv();
+          });
+      } else {
+        showSync("err","Error");
+        alert("Error: " + (res.error||"Please try again"));
+      }
+    })
+    .catch(function(){
+      btn.disabled = false; btn.textContent = "Submit evidence";
+      showSync("err","Network error");
+      alert("Network error. Please check your internet connection.");
+    });
+}
+
+// ── DRIVE URL MODAL ───────────────────────────────────────────
+function openDriveModal(){
+  document.getElementById("modal-drive-url").value = S.profile.driveUrl || "";
+  document.getElementById("modal-drive-bg").classList.add("show");
+}
+function saveDriveUrl(){
+  var url = document.getElementById("modal-drive-url").value.trim();
+  if(url && !url.startsWith("http")){alert("Please paste a valid link");return;}
+  S.profile.driveUrl = url;
+  save();
+  api({action:"updateDriveUrl"}, "POST", {id:S.profile.id, driveUrl:url})
+    .then(function(){showSync("ok","Drive folder saved");});
+  document.getElementById("p-drive-display").textContent = url ? "Folder linked ✓" : "Not set";
+  document.getElementById("p-drive-display").style.color = url ? "var(--dgreen)" : "var(--g2)";
+  closeModal("drive");
+  toast("Drive folder link saved");
+}
+
+function closeModal(which){
+  document.getElementById("modal-"+which+"-bg").classList.remove("show");
+}
+document.getElementById("modal-submit-bg").addEventListener("click",function(e){if(e.target===this)closeModal("submit");});
+document.getElementById("modal-drive-bg").addEventListener("click",function(e){if(e.target===this)closeModal("drive");});
+
+// ── PROFILE ───────────────────────────────────────────────────
+function buildProfile(){
+  var p = S.profile; if(!p)return;
+  document.getElementById("p-id-sub").textContent = p.id||"";
+  document.getElementById("p-id").textContent      = p.id||"";
+  document.getElementById("p-name").textContent    = p.name||"";
+  document.getElementById("p-phone").textContent   = p.phone||"";
+  document.getElementById("p-email").textContent   = p.email||"";
+  document.getElementById("p-trade").textContent   = p.trade||"";
+  document.getElementById("p-cohort").textContent  = p.cohort||"";
+  document.getElementById("p-year").textContent    = p.year||"";
+  document.getElementById("p-stage").textContent   = p.stage||"";
+  document.getElementById("p-employer").textContent= p.employer||"";
+  document.getElementById("p-site").textContent    = p.site||"";
+  var dv = document.getElementById("p-drive-display");
+  if(p.driveUrl){dv.textContent="Folder linked ✓";dv.style.color="var(--dgreen)";}
+  else{dv.textContent="Not set";dv.style.color="var(--g2)";}
+}
+
+function editProfile(){
+  var p = S.profile; if(!p)return;
+  document.getElementById("f-id").value       = p.id||"";
+  document.getElementById("f-name").value     = p.name||"";
+  document.getElementById("f-phone").value    = p.phone||"";
+  document.getElementById("f-email").value    = p.email||"";
+  document.getElementById("f-trade").value    = p.trade||"";
+  document.getElementById("f-cohort").value   = p.cohort||"";
+  document.getElementById("f-year").value     = p.year||"";
+  document.getElementById("f-stage").value    = p.stage||"";
+  document.getElementById("f-employer").value = p.employer||"";
+  document.getElementById("f-site").value     = p.site||"";
+  document.getElementById("f-start").value    = p.startDate||"";
+  document.getElementById("btn-setup").textContent = "Save changes";
+  go("setup");
+}
+
+function signOut(){
+  if(confirm("Sign out? Your data is saved in the BluLever tracker. You will need to enter your ID to sign back in.")){
+    localStorage.removeItem(SK);
+    S={profile:null,was:[],submissions:[]};
+    go("setup");
+    toast("Signed out");
+  }
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function go(pg){
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});
+  document.getElementById("pg-"+pg).classList.add("active");
+  if(pg==="profile") buildProfile();
+}
+function nav(btn){
+  var n=btn.closest(".bnav");
+  if(n)n.querySelectorAll(".nb").forEach(function(b){b.classList.remove("active");});
+  btn.classList.add("active");
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+var toastT;
+function toast(m){
+  var t=document.getElementById("toast");
+  t.textContent=m;t.classList.add("show");
+  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},2400);
+}
+</script>
+</body>
+</html>
