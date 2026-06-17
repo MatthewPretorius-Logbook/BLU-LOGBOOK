@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BluLever — Staff Audit Dashboard</title>
+<style>
+:root{
+  --navy:#1A3C5E;--teal:#0F6E56;--gold:#F5B800;--white:#fff;
+  --g0:#F4F6F8;--g1:#E2EBF0;--g2:#B4B2A9;--g3:#5F5E5A;
+  --green:#1D9E75;--lgreen:#E1F5EE;--dgreen:#085041;
+  --amber:#EF9F27;--lamber:#FAEEDA;--damber:#633806;
+  --red:#E24B4A;--lred:#FCEBEB;--dred:#791F1F;
+  --blue:#378ADD;--lblue:#E6F1FB;--dblue:#185FA5;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--g0);min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:0 0 40px}
+
+/* HEADER */
+.hdr{background:var(--navy);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr-logo{display:flex;align-items:center;gap:12px}
+.hdr-title{color:var(--white);font-size:16px;font-weight:700}
+.hdr-sub{color:rgba(255,255,255,.55);font-size:12px}
+.hdr-badge{background:var(--gold);color:var(--navy);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
+
+/* LOADING */
+.spinner{width:32px;height:32px;border:3px solid var(--g1);border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto;display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* STATS BAR */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 16px 0}
+.stat-card{background:var(--white);border-radius:10px;padding:12px 14px;border:1px solid var(--g1)}
+.stat-val{font-size:24px;font-weight:800;color:var(--navy);line-height:1}
+.stat-lbl{font-size:11px;color:var(--g3);margin-top:4px}
+.stat-card.green .stat-val{color:var(--dgreen)}
+.stat-card.amber .stat-val{color:var(--damber)}
+.stat-card.red   .stat-val{color:var(--dred)}
+
+/* FILTER BAR */
+.filter-bar{padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filter-bar input,.filter-bar select{padding:8px 12px;border-radius:8px;border:1.5px solid var(--g1);font-size:13px;font-family:inherit;outline:none;background:var(--white);color:var(--navy)}
+.filter-bar input{flex:1;min-width:160px}
+.filter-bar input:focus,.filter-bar select:focus{border-color:var(--navy)}
+.btn-refresh{padding:8px 16px;border-radius:8px;border:none;background:var(--navy);color:var(--white);font-size:13px;font-weight:600;cursor:pointer}
+
+/* APPRENTICE LIST */
+.appie-list{padding:0 16px}
+.appie-card{background:var(--white);border-radius:12px;border:1px solid var(--g1);margin-bottom:10px;overflow:hidden;cursor:pointer;transition:box-shadow .15s}
+.appie-card:hover{box-shadow:0 2px 12px rgba(26,60,94,.1)}
+.appie-hdr{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.appie-av{width:36px;height:36px;border-radius:50%;background:var(--navy);color:var(--white);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.appie-info{flex:1;min-width:0}
+.appie-name{font-size:14px;font-weight:700;color:var(--navy)}
+.appie-meta{font-size:11px;color:var(--g3);margin-top:1px}
+.appie-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.appie-pct{font-size:18px;font-weight:800;color:var(--navy)}
+.status-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.sp-on-track{background:var(--lgreen);color:var(--dgreen)}
+.sp-at-risk{background:var(--lamber);color:var(--damber)}
+.sp-non-compliant,.sp-not-started{background:var(--lred);color:var(--dred)}
+.sp-monitor{background:var(--lblue);color:var(--dblue)}
+.sp-awaiting{background:var(--lamber);color:var(--damber)}
+.appie-expand{display:none;border-top:1px solid var(--g1)}
+.appie-expand.open{display:block}
+
+/* AUDIT PANEL */
+.audit-tabs{display:flex;border-bottom:1px solid var(--g1);background:var(--g0)}
+.audit-tab{padding:10px 16px;font-size:12px;font-weight:600;color:var(--g3);cursor:pointer;border-bottom:2px solid transparent}
+.audit-tab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.audit-content{padding:14px}
+.audit-panel{display:none}.audit-panel.active{display:block}
+
+/* SUBMISSION ROWS */
+.sub-row{border:1px solid var(--g1);border-radius:8px;margin-bottom:8px;overflow:hidden}
+.sub-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--g0)}
+.sub-code{font-size:12px;font-weight:700;color:var(--navy);min-width:60px}
+.sub-comp{font-size:11px;color:var(--g3);flex:1}
+.sub-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.ss-waiting{background:var(--lamber);color:var(--damber)}
+.ss-accepted{background:var(--lgreen);color:var(--dgreen)}
+.ss-resub{background:var(--lred);color:var(--dred)}
+.sub-date{font-size:10px;color:var(--g2)}
+.sub-body{padding:10px 12px;border-top:1px solid var(--g1)}
+.sub-drive{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.sub-drive a{font-size:12px;color:var(--blue);text-decoration:none;word-break:break-all}
+.sub-drive a:hover{text-decoration:underline}
+.audit-form{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.audit-form select,.audit-form input{padding:8px 10px;border-radius:7px;border:1.5px solid var(--g1);font-size:12px;font-family:inherit;outline:none;background:var(--white);color:var(--navy)}
+.audit-form select:focus,.audit-form input:focus{border-color:var(--teal)}
+.audit-form textarea{grid-column:1/-1;padding:8px 10px;border-radius:7px;border:1.5px solid var(--g1);font-size:12px;font-family:inherit;outline:none;background:var(--white);color:var(--navy);resize:vertical;min-height:60px}
+.audit-form textarea:focus{border-color:var(--teal)}
+.btn-audit{grid-column:1/-1;padding:10px;border-radius:8px;border:none;background:var(--teal);color:var(--white);font-size:13px;font-weight:700;cursor:pointer}
+.btn-audit:disabled{opacity:.5;cursor:not-allowed}
+.audited-by{font-size:11px;color:var(--g3);grid-column:1/-1;padding:4px 2px}
+.no-subs{font-size:13px;color:var(--g2);text-align:center;padding:20px;font-style:italic}
+
+/* PROFILE TAB */
+.prof-table{width:100%;border-collapse:collapse;font-size:13px}
+.prof-table tr:nth-child(even){background:var(--g0)}
+.prof-table td{padding:7px 10px;border-bottom:1px solid var(--g1)}
+.prof-table td:first-child{font-weight:600;color:var(--g3);width:140px}
+.prof-table a{color:var(--blue);text-decoration:none}
+
+/* EMPTY / ERROR */
+.empty{text-align:center;padding:48px 20px;color:var(--g2);font-size:14px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);font-size:13px;font-weight:600;padding:10px 18px;border-radius:100px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+
+@media(max-width:600px){
+  .stats-bar{grid-template-columns:1fr 1fr}
+  .audit-form{grid-template-columns:1fr}
+  .audit-form select,.audit-form input,.btn-audit,.audited-by,.audit-form textarea{grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="hdr">
+  <div class="hdr-logo">
+    <svg width="110" height="28" viewBox="0 0 200 52" fill="none">
+      <circle cx="18" cy="13" r="6" fill="white"/><circle cx="38" cy="13" r="6" fill="white"/><circle cx="28" cy="31" r="6" fill="white"/>
+      <line x1="18" y1="13" x2="38" y2="13" stroke="white" stroke-width="2" opacity=".4"/>
+      <line x1="18" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+      <line x1="38" y1="13" x2="28" y2="31" stroke="white" stroke-width="2" opacity=".4"/>
+      <text x="62" y="20" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="white" letter-spacing="1">BLULEVER</text>
+      <text x="62" y="38" font-family="Arial,sans-serif" font-size="12" fill="rgba(255,255,255,0.6)" letter-spacing="1">EDUCATION</text>
+    </svg>
+    <div>
+      <div class="hdr-title">Staff Audit Dashboard</div>
+      <div class="hdr-sub">Logbook Tracker — Plumbing</div>
+    </div>
+  </div>
+  <span class="hdr-badge">BL STAFF ACCESS</span>
+</div>
+
+<div class="stats-bar" id="stats-bar">
+  <div class="stat-card"><div class="stat-val" id="st-total">—</div><div class="stat-lbl">Total apprentices</div></div>
+  <div class="stat-card green"><div class="stat-val" id="st-accepted">—</div><div class="stat-lbl">Evidence accepted</div></div>
+  <div class="stat-card amber"><div class="stat-val" id="st-waiting">—</div><div class="stat-lbl">Awaiting audit</div></div>
+  <div class="stat-card red"><div class="stat-val" id="st-resub">—</div><div class="stat-lbl">Resubmission required</div></div>
+</div>
+
+<div class="filter-bar">
+  <input id="search" type="text" placeholder="Search by name or ID..." oninput="filterList()">
+  <select id="filter-trade" onchange="filterList()">
+    <option value="">All trades</option>
+    <option>Plumbing</option><option>Electrical</option><option>Automotive</option><option>Solar</option>
+  </select>
+  <select id="filter-status" onchange="filterList()">
+    <option value="">All statuses</option>
+    <option>On track</option><option>At risk</option><option>Monitor</option>
+    <option>Awaiting audit</option><option>Not started</option>
+  </select>
+  <button class="btn-refresh" onclick="loadAll()">↻ Refresh</button>
+</div>
+
+<div id="appie-list" class="appie-list">
+  <div class="spinner"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0fycVJsPXZubiwz8BC5I6dCww7OgbHk64iOboGWq4gyinIdCCuoskCbNGnYwuDsPhRQ/exec";
+var ALL_APPIES = [];
+var OPEN_ID    = null;
+var APP_SUBS   = {};  // cache: appId -> submissions
+var APP_WAS    = {};  // cache: trade -> WAs
+
+var BL_STAFF = [
+  "Select your name...",
+  "Mkhululi Mbengwa","Thandi Nkosi","Lerato Dube",
+  "Sipho Khumalo","Amara Sithole","Add your name here"
+];
+
+// JSONP GET — bypasses CORS for Google Apps Script
+function apiGet(params){
+  return new Promise(function(resolve,reject){
+    var cb="blstaff_"+Date.now()+"_"+Math.floor(Math.random()*9999);
+    params.callback=cb;
+    var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(params[k]);}).join("&");
+    var el=document.createElement("script");el.src=SCRIPT_URL+"?"+qs;
+    var done=false;
+    var t=setTimeout(function(){if(done)return;done=true;cleanup();reject(new Error("Timeout"));},20000);
+    window[cb]=function(d){if(done)return;done=true;clearTimeout(t);cleanup();resolve(d);};
+    el.onerror=function(){if(done)return;done=true;clearTimeout(t);cleanup();reject(new Error("Error"));};
+    function cleanup(){delete window[cb];if(el.parentNode)el.parentNode.removeChild(el);}
+    document.head.appendChild(el);
+  });
+}
+
+// no-cors POST — opaque response, assume success
+function apiPost(action, body){
+  body.action=action;
+  return fetch(SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"text/plain"},
+    body:JSON.stringify(body)
+  }).then(function(){
+    return new Promise(function(res){setTimeout(res,2000);});
+  }).then(function(){return{success:true};});
+}
+
+// Legacy api() wrapper for backwards compatibility
+function api(params, method, body){
+  if(method==="GET") return apiGet(params);
+  else return apiPost(params.action, body||{});
+}
+
+function loadAll(){
+  document.getElementById("appie-list").innerHTML='<div class="spinner"></div>';
+  api({action:"getAllApprentices"},"GET")
+    .then(function(res){
+      ALL_APPIES = res.apprentices || [];
+      updateStats();
+      renderList(ALL_APPIES);
+    })
+    .catch(function(){
+      document.getElementById("appie-list").innerHTML='<div class="empty">Could not load apprentices. Check your internet connection and try again.</div>';
+    });
+}
+
+function updateStats(){
+  document.getElementById("st-total").textContent   = ALL_APPIES.length;
+  document.getElementById("st-accepted").textContent= ALL_APPIES.filter(function(a){return a.status==="On track";}).length;
+  document.getElementById("st-waiting").textContent = ALL_APPIES.filter(function(a){return a.status==="Awaiting audit";}).length;
+  document.getElementById("st-resub").textContent   = ALL_APPIES.filter(function(a){return a.status==="At risk";}).length;
+}
+
+function filterList(){
+  var q  = document.getElementById("search").value.toLowerCase();
+  var tr = document.getElementById("filter-trade").value;
+  var st = document.getElementById("filter-status").value;
+  var filtered = ALL_APPIES.filter(function(a){
+    var matchQ  = !q  || (a.name||"").toLowerCase().includes(q) || (a.id||"").toLowerCase().includes(q);
+    var matchTr = !tr || (a.trade||"") === tr;
+    var matchSt = !st || (a.status||"") === st;
+    return matchQ && matchTr && matchSt;
+  });
+  renderList(filtered);
+}
+
+function statusPillClass(status){
+  var s = (status||"").toLowerCase().replace(/ /g,"-");
+  return "status-pill sp-"+s;
+}
+
+function renderList(appies){
+  var el = document.getElementById("appie-list");
+  if(appies.length===0){el.innerHTML='<div class="empty">No apprentices found.</div>';return;}
+  el.innerHTML = appies.map(function(a){
+    var init = (a.name||"").split(" ").map(function(w){return w[0]||"";}).join("").slice(0,2).toUpperCase();
+    var pct  = a.pct || "0%";
+    var sp   = statusPillClass(a.status);
+    return '<div class="appie-card" id="card-'+a.id+'">'
+      +'<div class="appie-hdr" onclick="toggleAppie(\''+a.id+'\',\''+a.trade+'\')"> '
+      +'<div class="appie-av">'+init+'</div>'
+      +'<div class="appie-info">'
+      +'<div class="appie-name">'+a.name+'</div>'
+      +'<div class="appie-meta">'+a.id+' · '+(a.trade||'')+'· '+(a.cohort||'')+' · '+(a.stage||'')+'</div>'
+      +'<div class="appie-meta">'+(a.employer||'')+(a.site?' · '+a.site:'')+'</div>'
+      +'</div>'
+      +'<div class="appie-right">'
+      +'<div class="appie-pct">'+pct+'</div>'
+      +'<span class="'+sp+'">'+a.status+'</span>'
+      +'<div style="font-size:10px;color:var(--g2);margin-top:2px">'+(a.submitted||0)+' submitted · '+(a.audited||0)+' accepted</div>'
+      +'</div>'
+      +'</div>'
+      +'<div class="appie-expand" id="exp-'+a.id+'"><div class="spinner"></div></div>'
+      +'</div>';
+  }).join("");
+}
+
+function toggleAppie(id, trade){
+  var exp = document.getElementById("exp-"+id);
+  if(exp.classList.contains("open")){
+    exp.classList.remove("open"); OPEN_ID=null; return;
+  }
+  // Close any other open ones
+  document.querySelectorAll(".appie-expand.open").forEach(function(e){e.classList.remove("open");});
+  OPEN_ID = id;
+  exp.classList.add("open");
+  exp.innerHTML = '<div class="spinner"></div>';
+
+  // Load subs and WAs in parallel
+  var aData = ALL_APPIES.find(function(a){return a.id===id;}) || {};
+  var tradeLower = (trade||"Plumbing");
+
+  var wasPromise = APP_WAS[tradeLower]
+    ? Promise.resolve({was: APP_WAS[tradeLower]})
+    : api({action:"getWAs", trade:tradeLower},"GET");
+  var subsPromise = APP_SUBS[id]
+    ? Promise.resolve({submissions: APP_SUBS[id]})
+    : api({action:"getSubmissions", id:id},"GET");
+
+  Promise.all([wasPromise, subsPromise]).then(function(results){
+    if(results[0].was) APP_WAS[tradeLower] = results[0].was;
+    if(results[1].submissions) APP_SUBS[id] = results[1].submissions;
+    renderAuditPanel(id, aData, APP_WAS[tradeLower]||[], APP_SUBS[id]||[], exp);
+  }).catch(function(){
+    exp.innerHTML='<div class="empty">Error loading data.</div>';
+  });
+}
+
+function renderAuditPanel(id, aData, was, subs, el){
+  // Group subs by waId
+  var subsByWA = {};
+  subs.forEach(function(s){ var k=s.waId; if(!subsByWA[k])subsByWA[k]=[]; subsByWA[k].push(s); });
+
+  var subsWaiting = subs.filter(function(s){return s.audStatus==="Awaiting audit";}).length;
+  var subsAccepted= subs.filter(function(s){return s.audStatus==="Accepted";}).length;
+  var subsResub   = subs.filter(function(s){return s.audStatus==="Resubmission required";}).length;
+
+  // Submissions tab
+  var subsHTML = subs.length === 0
+    ? '<div class="no-subs">No evidence submitted yet.</div>'
+    : subs.map(function(s){
+        var sc = s.audStatus==="Accepted"?"ss-accepted":s.audStatus==="Resubmission required"?"ss-resub":"ss-waiting";
+        var auditedInfo = s.auditedBy ? '<div class="audited-by">Last audited by '+s.auditedBy+' on '+s.auditDate+'</div>' : '';
+        var staffOpts = BL_STAFF.map(function(n,i){return '<option'+(i===0?' disabled selected':'')+'>'+n+'</option>';}).join("");
+        return '<div class="sub-row" id="subrow-'+s.subId+'">'
+          +'<div class="sub-hdr">'
+          +'<span class="sub-code">'+s.waCode+'</span>'
+          +'<span class="sub-comp">Completion '+s.compNum+' · Submitted '+s.dateSubmitted+'</span>'
+          +'<span class="sub-status '+sc+'">'+s.audStatus+'</span>'
+          +'</div>'
+          +'<div class="sub-body">'
+          +'<div class="sub-drive">'
+          +(s.driveUrl
+            ? '📁 <a href="'+s.driveUrl+'" target="_blank">Open evidence folder in Drive</a>'
+            : '<span style="color:var(--g2);font-size:12px">No Drive folder linked</span>')
+          +'</div>'
+          +'<div class="audit-form">'
+          +'<select id="status-'+s.subId+'">'
+          +'<option value="Awaiting audit"'+(s.audStatus==="Awaiting audit"?" selected":"")+'>Awaiting audit</option>'
+          +'<option value="Accepted"'+(s.audStatus==="Accepted"?" selected":"")+'>✓ Accept evidence</option>'
+          +'<option value="Resubmission required"'+(s.audStatus==="Resubmission required"?" selected":"")+'>✗ Resubmission required</option>'
+          +'</select>'
+          +'<select id="auditor-'+s.subId+'"><option value="">Select your name...</option>'
+          +BL_STAFF.slice(1).map(function(n){return '<option'+(s.auditedBy===n?" selected":"")+'>'+n+'</option>';}).join("")
+          +'</select>'
+          +'<textarea id="comment-'+s.subId+'" placeholder="Leave a comment for the apprentice (optional)...">'+( s.comment||"")+'</textarea>'
+          +auditedInfo
+          +'<button class="btn-audit" onclick="saveAudit(\''+s.subId+'\',\''+id+'\')">Save audit</button>'
+          +'</div>'
+          +'</div>'
+          +'</div>';
+      }).join("");
+
+  // WA summary tab
+  var waHTML = was.length === 0
+    ? '<div class="no-subs">No work activities loaded.</div>'
+    : was.map(function(wa){
+        var waSubs = subsByWA[wa.waId] || [];
+        var accepted = waSubs.filter(function(s){return s.audStatus==="Accepted";}).length;
+        var req      = parseInt(wa.required)||10;
+        var pct      = Math.round(accepted/req*100);
+        var bc       = accepted===req?"#E1F5EE;color:#085041":accepted>0?"#FAEEDA;color:#633806":"#FCEBEB;color:#791F1F";
+        return '<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--g1);font-size:12px">'
+          +'<span style="font-family:monospace;font-size:11px;color:var(--g3);min-width:54px">'+wa.code+'</span>'
+          +'<span style="flex:1;color:var(--navy)">'+wa.desc+'</span>'
+          +'<span style="background:'+bc+';font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap">'+accepted+'/'+req+' accepted</span>'
+          +'</div>';
+      }).join("");
+
+  // Profile tab
+  var profHTML = '<table class="prof-table">'
+    +[["ID",aData.id],["Name",aData.name],["Trade",aData.trade],["Cohort",aData.cohort],
+      ["Year",aData.year],["Stage",aData.stage],["Employer",aData.employer],["Site",aData.site],
+      ["Submitted",aData.submitted],["Accepted",aData.audited],["% complete",aData.pct],
+      ["Status",aData.status],["Last updated",aData.updated]]
+    .map(function(r){return '<tr><td>'+r[0]+'</td><td>'+(r[1]||'—')+'</td></tr>';}).join("")
+    +'</table>';
+
+  el.innerHTML = '<div class="audit-tabs">'
+    +'<div class="audit-tab active" onclick="switchTab(this,\'subs-'+id+'\')" >Evidence submissions ('+subs.length+') · '+subsWaiting+' awaiting</div>'
+    +'<div class="audit-tab" onclick="switchTab(this,\'was-'+id+'\')">WA progress ('+was.length+' WAs)</div>'
+    +'<div class="audit-tab" onclick="switchTab(this,\'prof-'+id+'\')">Profile</div>'
+    +'</div>'
+    +'<div class="audit-content">'
+    +'<div class="audit-panel active" id="subs-'+id+'">'+subsHTML+'</div>'
+    +'<div class="audit-panel" id="was-'+id+'">'+waHTML+'</div>'
+    +'<div class="audit-panel" id="prof-'+id+'">'+profHTML+'</div>'
+    +'</div>';
+}
+
+function switchTab(btn, panelId){
+  var tabs = btn.closest(".audit-tabs").querySelectorAll(".audit-tab");
+  var panels = btn.closest(".appie-expand").querySelectorAll(".audit-panel");
+  tabs.forEach(function(t){t.classList.remove("active");});
+  panels.forEach(function(p){p.classList.remove("active");});
+  btn.classList.add("active");
+  document.getElementById(panelId).classList.add("active");
+}
+
+function saveAudit(subId, appId){
+  var status    = document.getElementById("status-"+subId).value;
+  var auditedBy = document.getElementById("auditor-"+subId).value;
+  var comment   = document.getElementById("comment-"+subId).value.trim();
+
+  if(!auditedBy || auditedBy==="Select your name..."){
+    alert("Please select your name before saving the audit.");return;
+  }
+
+  var btn = document.querySelector("#subrow-"+subId+" .btn-audit");
+  if(btn){btn.disabled=true; btn.textContent="Saving...";}
+
+  apiPost("auditSubmission",{subId:subId, status:status, auditedBy:auditedBy, comment:comment})
+    .then(function(res){
+      if(res.success){
+        // Clear cache and reload
+        delete APP_SUBS[appId];
+        toast("Audit saved for submission "+subId);
+        // Reload this apprentice panel
+        var a = ALL_APPIES.find(function(a){return a.id===appId;})||{};
+        var exp = document.getElementById("exp-"+appId);
+        exp.innerHTML='<div class="spinner"></div>';
+        api({action:"getSubmissions",id:appId},"GET").then(function(r){
+          APP_SUBS[appId]=r.submissions||[];
+          var trade = a.trade||"Plumbing";
+          renderAuditPanel(appId, a, APP_WAS[trade]||[], APP_SUBS[appId], exp);
+        });
+        // Refresh stats after a moment
+        setTimeout(loadAll, 1500);
+      } else {
+        if(btn){btn.disabled=false;btn.textContent="Save audit";}
+        alert("Error: "+(res.error||"Please try again"));
+      }
+    })
+    .catch(function(){
+      if(btn){btn.disabled=false;btn.textContent="Save audit";}
+      alert("Network error. Please check your internet connection.");
+    });
+}
+
+var toastT;
+function toast(m){
+  var t=document.getElementById("toast");
+  t.textContent=m;t.classList.add("show");
+  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},2400);
+}
+
+loadAll();
+</script>
+</body>
+</html>
